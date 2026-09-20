@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Cuaderno" />
+<meta name="theme-color" content="#f5efe1" />
+<title>Cuaderno de Trabajo</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="icon.png" />
+<style>
+  :root{
+    --paper:#f7f1e3;
+    --paper-line:#e6dcc4;
+    --ink:#2b2b2b;
+    --ink-soft:#6b6b6b;
+    --accent:#b5451f;
+    --accent-soft:#e8b48a;
+    --important:#c9762a;
+    --done:#9aa79a;
+    --shadow:0 2px 10px rgba(0,0,0,.06);
+    --radius:14px;
+    --bg:#efe7d4;
+  }
+  [data-theme="dark"]{
+    --paper:#1f1e1c;
+    --paper-line:#2e2c28;
+    --ink:#ece7db;
+    --ink-soft:#a8a397;
+    --accent:#e08b5b;
+    --accent-soft:#6a3f28;
+    --important:#e0a25b;
+    --done:#5c615a;
+    --shadow:0 2px 10px rgba(0,0,0,.4);
+    --bg:#151412;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    overscroll-behavior-y:none;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:env(safe-area-inset-bottom);
+    padding-top:env(safe-area-inset-top);
+  }
+  #app{
+    max-width:640px;margin:0 auto;min-height:100vh;
+    background:var(--paper);position:relative;
+    display:flex;flex-direction:column;
+  }
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;top:0;z-index:20;
+    background:var(--paper);
+    border-bottom:1px solid var(--paper-line);
+    padding:12px 16px 8px;
+  }
+  .toprow{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+  }
+  .daynav{
+    display:flex;align-items:center;gap:6px;
+  }
+  .daynav button{
+    background:transparent;border:none;color:var(--ink);
+    font-size:22px;padding:6px 10px;border-radius:10px;cursor:pointer;
+  }
+  .daynav button:active{background:var(--paper-line)}
+  .daytitle{
+    font-size:17px;font-weight:600;letter-spacing:.4px;text-transform:capitalize;
+    flex:1;text-align:center;line-height:1.15;
+  }
+  .daytitle small{display:block;font-size:11px;font-weight:400;color:var(--ink-soft);letter-spacing:.8px;text-transform:uppercase;margin-top:2px}
+  .todaybtn{
+    background:var(--accent);color:#fff;border:none;border-radius:20px;
+    padding:6px 12px;font-size:12px;font-weight:600;letter-spacing:.5px;cursor:pointer;
+  }
+  .iconbtn{
+    background:transparent;border:none;color:var(--ink);font-size:20px;
+    padding:6px 8px;border-radius:10px;cursor:pointer;
+  }
+  .iconbtn:active{background:var(--paper-line)}
+
+  /* ---------- Late banner ---------- */
+  .late{
+    background:linear-gradient(90deg,#fff4e0,#ffe9cc);
+    border:1px solid var(--accent-soft);
+    color:#7a3b12;border-radius:12px;padding:8px 12px;margin:8px 16px 0;
+    font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  }
+  [data-theme="dark"] .late{background:#2b2118;border-color:#5a3a22;color:#f0c79a}
+  .late button{
+    background:#7a3b12;color:#fff;border:none;border-radius:14px;
+    padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer;
+  }
+
+  /* ---------- Lista anotaciones ---------- */
+  main{flex:1;padding:12px 14px 120px}
+  .section-label{
+    font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:600;margin:14px 4px 8px;display:flex;align-items:center;gap:6px;
+  }
+  .empty{
+    text-align:center;color:var(--ink-soft);font-size:14px;padding:50px 20px;line-height:1.6;
+  }
+  .empty b{color:var(--ink);display:block;font-size:16px;margin-bottom:6px}
+
+  .card{
+    background:var(--paper);
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    padding:12px 14px;
+    margin-bottom:10px;
+    box-shadow:var(--shadow);
+    position:relative;
+    display:flex;gap:10px;align-items:flex-start;
+    touch-action:manipulation;
+    transition:transform .12s, opacity .12s;
+  }
+  .card.done{opacity:.5}
+  .card.done .ctitle{text-decoration:line-through}
+  .card.important{border-left:4px solid var(--important)}
+  .card.dragging{opacity:.4;transform:scale(.98)}
+
+  .check{
+    flex:0 0 24px;width:24px;height:24px;border:2px solid var(--ink-soft);
+    border-radius:6px;margin-top:2px;cursor:pointer;position:relative;
+    background:transparent;
+  }
+  .check.on{background:var(--done);border-color:var(--done)}
+  .check.on::after{
+    content:"✓";color:#fff;font-size:15px;position:absolute;
+    left:4px;top:-1px;font-weight:700;
+  }
+
+  .cbody{flex:1;min-width:0}
+  .ctitle{font-size:15px;font-weight:600;line-height:1.3;word-wrap:break-word}
+  .ctext{font-size:13.5px;color:var(--ink-soft);margin-top:3px;white-space:pre-wrap;word-wrap:break-word;line-height:1.4}
+  .cmeta{
+    display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+    margin-top:6px;font-size:11.5px;color:var(--ink-soft);
+  }
+  .tag{
+    background:var(--paper-line);padding:2px 8px;border-radius:10px;
+    font-size:10.5px;letter-spacing:.4px;text-transform:uppercase;font-weight:600;
+  }
+  .tag.prio-high{background:#f7d0c0;color:#8a2d10}
+  .tag.prio-med{background:#f6e4c2;color:#7a5410}
+  .tag.prio-low{background:#d8e6d6;color:#3a5a3a}
+  [data-theme="dark"] .tag.prio-high{background:#5a2a1a;color:#ffcbb4}
+  [data-theme="dark"] .tag.prio-med{background:#5a4520;color:#ffdca1}
+  [data-theme="dark"] .tag.prio-low{background:#2f4a2f;color:#c8e0c8}
+  .card .star{
+    background:transparent;border:none;font-size:18px;cursor:pointer;
+    color:var(--ink-soft);padding:0 2px;
+  }
+  .card .star.on{color:var(--important)}
+  .card .more{
+    background:transparent;border:none;font-size:18px;cursor:pointer;
+    color:var(--ink-soft);padding:0 4px;
+  }
+
+  /* ---------- FAB ---------- */
+  .fab{
+    position:fixed;right:calc(50% - 320px + 20px);bottom:calc(30px + env(safe-area-inset-bottom));
+    width:58px;height:58px;border-radius:50%;
+    background:var(--accent);color:#fff;border:none;font-size:30px;line-height:1;
+    box-shadow:0 6px 18px rgba(180,70,30,.35);cursor:pointer;z-index:30;
+    display:flex;align-items:center;justify-content:center;
+  }
+  @media(max-width:680px){.fab{right:20px}}
+  .fab:active{transform:scale(.94)}
+
+  /* ---------- Bottom nav ---------- */
+  nav.tabs{
+    position:fixed;left:0;right:0;bottom:0;
+    background:var(--paper);border-top:1px solid var(--paper-line);
+    display:flex;justify-content:space-around;align-items:center;
+    padding:6px 0 calc(6px + env(safe-area-inset-bottom));
+    z-index:25;max-width:640px;margin:0 auto;
+  }
+  nav.tabs button{
+    background:transparent;border:none;color:var(--ink-soft);
+    font-size:10px;display:flex;flex-direction:column;align-items:center;gap:2px;
+    padding:4px 8px;border-radius:10px;cursor:pointer;font-weight:500;
+  }
+  nav.tabs button .ico{font-size:19px;line-height:1}
+  nav.tabs button.active{color:var(--accent)}
+
+  /* ---------- Sheet (modal) ---------- */
+  .sheet-bg{
+    position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40;
+    display:none;align-items:flex-end;justify-content:center;
+  }
+  .sheet-bg.open{display:flex}
+  .sheet{
+    background:var(--paper);width:100%;max-width:640px;
+    border-radius:20px 20px 0 0;padding:18px 16px calc(20px + env(safe-area-inset-bottom));
+    max-height:92vh;overflow-y:auto;box-shadow:0 -6px 30px rgba(0,0,0,.2);
+    animation:slideup .22s ease-out;
+  }
+  @keyframes slideup{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .sheet h3{margin:0 0 12px;font-size:16px;font-weight:600}
+  .sheet input[type=text],.sheet textarea,.sheet input[type=date],.sheet input[type=time],.sheet select{
+    width:100%;padding:11px 12px;border:1px solid var(--paper-line);border-radius:10px;
+    font-size:15px;font-family:inherit;background:var(--bg);color:var(--ink);margin-bottom:10px;
+    -webkit-appearance:none;appearance:none;
+  }
+  .sheet textarea{min-height:90px;resize:vertical}
+  .row{display:flex;gap:8px}
+  .row>*{flex:1}
+  .chiprow{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .chip{
+    padding:7px 12px;border-radius:16px;border:1px solid var(--paper-line);
+    background:var(--bg);font-size:13px;cursor:pointer;color:var(--ink);
+  }
+  .chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .sheet .actions{display:flex;gap:8px;margin-top:8px}
+  .sheet .actions button{
+    flex:1;padding:12px;border-radius:12px;border:none;font-size:15px;font-weight:600;cursor:pointer;
+  }
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-ghost{background:var(--bg);color:var(--ink);border:1px solid var(--paper-line)!important}
+  .btn-danger{background:#c0392b;color:#fff}
+  .label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);font-weight:600;margin:2px 2px 6px}
+  .moveopt{
+    display:block;width:100%;text-align:left;padding:14px 12px;background:var(--bg);
+    border:1px solid var(--paper-line);border-radius:12px;margin-bottom:8px;font-size:15px;
+    color:var(--ink);cursor:pointer;font-family:inherit;
+  }
+  .moveopt:active{background:var(--paper-line)}
+
+  /* ---------- Calendario ---------- */
+  .cal{padding:8px 12px 100px}
+  .cal-head{display:flex;align-items:center;justify-content:space-between;padding:8px 6px 12px}
+  .cal-head button{background:transparent;border:none;font-size:20px;padding:6px 12px;cursor:pointer;color:var(--ink)}
+  .cal-head .mtitle{font-size:16px;font-weight:600;text-transform:capitalize}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cal-grid .wd{font-size:11px;text-align:center;color:var(--ink-soft);padding:4px 0;font-weight:600}
+  .cal-cell{
+    aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    border-radius:12px;cursor:pointer;position:relative;font-size:14px;
+    border:1px solid transparent;color:var(--ink);background:transparent;
+  }
+  .cal-cell.muted{color:var(--ink-soft);opacity:.35}
+  .cal-cell.today{background:var(--accent-soft);font-weight:700}
+  .cal-cell.selected{border-color:var(--accent);font-weight:700}
+  .cal-cell .dots{display:flex;gap:2px;margin-top:3px;position:absolute;bottom:6px}
+  .cal-cell .dot{width:4px;height:4px;border-radius:50%;background:var(--accent)}
+  .cal-cell .dot.imp{background:var(--important)}
+  .cal-cell .dot.done{background:var(--done)}
+
+  /* ---------- Search ---------- */
+  .searchbox{
+    padding:10px 14px;
+  }
+  .searchbox input{
+    width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--paper-line);
+    background:var(--bg);color:var(--ink);font-size:16px;font-family:inherit;
+  }
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom));
+    transform:translateX(-50%);background:#2b2b2b;color:#fff;
+    padding:10px 18px;border-radius:20px;font-size:14px;z-index:60;
+    opacity:0;transition:opacity .2s, transform .2s;pointer-events:none;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+
+  /* ---------- Settings ---------- */
+  .settings{padding:16px 16px 120px}
+  .settings h3{font-size:14px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin:22px 4px 10px}
+  .settings .opt{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 14px;background:var(--bg);border:1px solid var(--paper-line);
+    border-radius:12px;margin-bottom:8px;font-size:15px;cursor:pointer;
+  }
+  .settings .opt small{display:block;color:var(--ink-soft);font-size:12px;margin-top:2px}
+  .switch{
+    width:46px;height:28px;border-radius:14px;background:#bbb;position:relative;transition:.2s;flex:0 0 auto;
+  }
+  .switch.on{background:var(--accent)}
+  .switch::after{
+    content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+    background:#fff;transition:.2s;
+  }
+  .switch.on::after{left:21px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="header"></header>
+  <main id="main"></main>
+  <nav class="tabs" id="tabs"></nav>
+  <button class="fab" id="fab" aria-label="Nueva anotación">+</button>
+  <div class="sheet-bg" id="sheetBg"><div class="sheet" id="sheet"></div></div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ============================================================
+   CUADERNO DE TRABAJO — PWA
+   ============================================================ */
+
+const STORE_KEY = 'cuaderno.v1';
+const THEME_KEY = 'cuaderno.theme';
+let state = {
+  notes: [],
+  theme: localStorage.getItem(THEME_KEY) || 'light'
+};
+let currentDate = todayISO();
+let currentTab = 'hoy';
+let calMonth = new Date();
+let searchQuery = '';
+let pendingDragId = null;
+
+/* ---------- Utilidades de fecha ---------- */
+function todayISO(){ return toISO(new Date()); }
+function toISO(d){
+  const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function parseISO(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function addDays(iso,n){ const d=parseISO(iso); d.setDate(d.getDate()+n); return toISO(d); }
+function fmtLong(iso){
+  const d=parseISO(iso);
+  const wd=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][d.getDay()];
+  const mn=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][d.getMonth()];
+  return `${wd} ${d.getDate()} ${mn}`;
+}
+function fmtShort(iso){
+  const d=parseISO(iso);
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+function nextWeekday(target){ // 1=lunes..7=domingo
+  const d=new Date(); const cur=d.getDay()===0?7:d.getDay();
+  let diff=(target-cur+7)%7; if(diff===0)diff=7;
+  d.setDate(d.getDate()+diff); return toISO(d);
+}
+
+/* ---------- Persistencia ---------- */
+function load(){
+  try{
+    const raw=localStorage.getItem(STORE_KEY);
+    if(raw){ const p=JSON.parse(raw); if(p && Array.isArray(p.notes)) state.notes=p.notes; }
+  }catch(e){ console.warn('load error',e); }
+}
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify({notes:state.notes})); }
+  catch(e){ toast('No se pudo guardar'); }
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* ---------- Tema ---------- */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', state.theme);
+  const meta=document.querySelector('meta[name=theme-color]');
+  if(meta) meta.setAttribute('content', state.theme==='dark'?'#151412':'#f5efe1');
+}
+function toggleTheme(){
+  state.theme = state.theme==='dark'?'light':'dark';
+  localStorage.setItem(THEME_KEY, state.theme);
+  applyTheme(); render();
+}
+
+/* ---------- Toast ---------- */
+let toastT;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+/* ---------- CRUD ---------- */
+function addNote(n){
+  const note={
+    id:uid(),
+    title:n.title||'',
+    text:n.text||'',
+    date:n.date||todayISO(),
+    time:n.time||'',
+    priority:n.priority||'',
+    category:n.category||'',
+    important:!!n.important,
+    done:false,
+    repeat:n.repeat||'',
+    createdAt:Date.now()
+  };
+  state.notes.push(note);
+  save(); render();
+  return note;
+}
+function updateNote(id,patch){
+  const n=state.notes.find(x=>x.id===id); if(!n)return;
+  Object.assign(n,patch); save();
+}
+function deleteNote(id){
+  state.notes=state.notes.filter(n=>n.id!==id); save(); render();
+}
+function duplicateNote(id){
+  const n=state.notes.find(x=>x.id===id); if(!n)return;
+  const copy={...n,id:uid(),done:false,createdAt:Date.now()};
+  state.notes.push(copy); save(); render(); toast('Duplicada');
+}
+function toggleDone(id){
+  const n=state.notes.find(x=>x.id===id); if(!n)return;
+  n.done=!n.done;
+  // Repetición: al completar, crea la siguiente ocurrencia
+  if(n.done && n.repeat){
+    const nextDate = nextRepeat(n.date, n.repeat);
+    if(nextDate){
+      const c={...n,id:uid(),done:false,date:nextDate,createdAt:Date.now()};
+      state.notes.push(c);
+    }
+  }
+  save(); render();
+}
+function nextRepeat(iso,type){
+  const d=parseISO(iso);
+  if(type==='daily'){ d.setDate(d.getDate()+1); return toISO(d); }
+  if(type==='weekly'){ d.setDate(d.getDate()+7); return toISO(d); }
+  if(type==='monthly'){ d.setMonth(d.getMonth()+1); return toISO(d); }
+  return null;
+}
+function moveNote(id,newDate){
+  const n=state.notes.find(x=>x.id===id); if(!n)return;
+  n.date=newDate; save(); render();
+  toast('Movida a '+fmtShort(newDate));
+}
+function toggleImportant(id){
+  const n=state.notes.find(x=>x.id===id); if(!n)return;
+  n.important=!n.important; save(); render();
+}
+function notesForDate(iso){
+  return state.notes.filter(n=>n.date===iso)
+    .sort((a,b)=>{
+      if(a.done!==b.done)return a.done?1:-1;
+      if(a.important!==b.important)return a.important?-1:1;
+      const p={high:0,med:1,low:2,'':3};
+      if(p[a.priority]!==p[b.priority])return p[a.priority]-p[b.priority];
+      if(a.time&&b.time)return a.time.localeCompare(b.time);
+      if(a.time)return -1; if(b.time)return 1;
+      return a.createdAt-b.createdAt;
+    });
+}
+function lateNotes(){
+  const t=todayISO();
+  return state.notes.filter(n=>!n.done && n.date<t);
+}
+
+/* ---------- Render principal ---------- */
+function render(){
+  const header=document.getElementById('header');
+  const main=document.getElementById('main');
+  const tabs=document.getElementById('tabs');
+  const fab=document.getElementById('fab');
+
+  // Tabs
+  const tabDefs=[
+    {id:'hoy',ico:'📅',label:'Hoy'},
+    {id:'calendario',ico:'📆',label:'Calendario'},
+    {id:'notas',ico:'📝',label:'Notas'},
+    {id:'importantes',ico:'⭐',label:'Importantes'},
+    {id:'pendientes',ico:'📌',label:'Pendientes'},
+    {id:'buscar',ico:'🔎',label:'Buscar'},
+  ];
+  tabs.innerHTML=tabDefs.map(t=>
+    `<button data-tab="${t.id}" class="${currentTab===t.id?'active':''}">
+       <span class="ico">${t.ico}</span>${t.label}
+     </button>`).join('');
+  tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    currentTab=b.dataset.tab;
+    if(currentTab==='calendario'){ calMonth=new Date(); }
+    if(currentTab==='buscar'){ searchQuery=''; }
+    render();
+  });
+
+  // Header según tab
+  if(currentTab==='hoy'){
+    header.innerHTML=`
+      <div class="toprow">
+        <div class="daynav">
+          <button id="prev">‹</button>
+          <div class="daytitle" id="daytitle">
+            ${isToday(currentDate)?'Hoy':''}
+            <span style="display:block">${fmtLong(currentDate)}</span>
+            <small>${currentYearLabel(currentDate)}</small>
+          </div>
+          <button id="next">›</button>
+        </div>
+        <div style="display:flex;gap:2px;align-items:center">
+          <button class="todaybtn" id="goToday">HOY</button>
+          <button class="iconbtn" id="settings">⚙︎</button>
+        </div>
+      </div>`;
+    header.querySelector('#prev').onclick=()=>{ currentDate=addDays(currentDate,-1); render(); };
+    header.querySelector('#next').onclick=()=>{ currentDate=addDays(currentDate,1); render(); };
+    header.querySelector('#goToday').onclick=()=>{ currentDate=todayISO(); render(); };
+    header.querySelector('#settings').onclick=openSettings;
+    fab.style.display='flex';
+    renderDay(main);
+  } else if(currentTab==='calendario'){
+    header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Calendario<small>toca un día para abrirlo</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    header.querySelector('#settings').onclick=openSettings;
+    fab.style.display='flex';
+    renderCalendar(main);
+  } else if(currentTab==='notas'){
+    header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Notas<small>todas las anotaciones escritas</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    header.querySelector('#settings').onclick=openSettings;
+    fab.style.display='flex';
+    renderAllNotes(main);
+  } else if(currentTab==='importantes'){
+    header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Importantes<small>marcadas con ⭐</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    header.querySelector('#settings').onclick=openSettings;
+    fab.style.display='flex';
+    renderImportantes(main);
+  } else if(currentTab==='pendientes'){
+    header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Pendientes<small>sin completar</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    header.querySelector('#settings').onclick=openSettings;
+    fab.style.display='flex';
+    renderPendientes(main);
+  } else if(currentTab==='buscar'){
+    header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Buscar<small>en título, texto, categoría</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    header.querySelector('#settings').onclick=openSettings;
+    fab.style.display='none';
+    renderBuscar(main);
+  }
+
+  // Late banner (siempre en HOY)
+  if(currentTab==='hoy'){
+    const late=lateNotes();
+    if(late.length){
+      const banner=document.createElement('div');
+      banner.className='late';
+      banner.innerHTML=`<span>⚠︎ ${late.length} pendiente${late.length>1?'s':''} de días anteriores</span><button id="seelate">Ver</button>`;
+      main.insertBefore(banner, main.firstChild);
+      banner.querySelector('#seelate').onclick=()=>{ currentTab='pendientes'; render(); };
+    }
+  }
+
+  // FAB
+  fab.onclick=()=>openEditor(null, currentTab==='hoy'?currentDate:todayISO());
+}
+
+function currentYearLabel(iso){
+  const d=parseISO(iso);
+  return `${d.getFullYear()}`;
+}
+function isToday(iso){ return iso===todayISO(); }
+
+/* ---------- Render día ---------- */
+function renderDay(main){
+  const list=notesForDate(currentDate);
+  if(!list.length){
+    main.innerHTML=`<div class="empty"><b>Nada por aquí</b>Pulsa <b style="display:inline">+</b> para escribir algo en este día.</div>`;
+    return;
+  }
+  const pend=list.filter(n=>!n.done);
+  const done=list.filter(n=>n.done);
+  const imp=pend.filter(n=>n.important);
+  const normal=pend.filter(n=>!n.important);
+
+  let html='';
+  if(imp.length){
+    html+=`<div class="section-label">⭐ Importante</div>`;
+    html+=imp.map(n=>cardHTML(n)).join('');
+  }
+  if(normal.length){
+    html+=`<div class="section-label">☐ Anotaciones</div>`;
+    html+=normal.map(n=>cardHTML(n)).join('');
+  }
+  if(done.length){
+    html+=`<div class="section-label">✓ Completado</div>`;
+    html+=done.map(n=>cardHTML(n)).join('');
+  }
+  main.innerHTML=html;
+  wireCards(main);
+}
+
+function cardHTML(n){
+  const prioTag = n.priority ? `<span class="tag prio-${n.priority}">${n.priority==='high'?'Alta':n.priority==='med'?'Media':'Baja'}</span>` : '';
+  const timeTag = n.time ? `<span class="tag">🕒 ${n.time}</span>` : '';
+  const catTag = n.category ? `<span class="tag">${escapeHTML(n.category)}</span>` : '';
+  const dateTag = (n.date!==currentDate && currentTab!=='hoy') ? `<span class="tag">${fmtShort(n.date)}</span>` : '';
+  const repeatTag = n.repeat ? `<span class="tag">🔁 ${n.repeat==='daily'?'diaria':n.repeat==='weekly'?'semanal':'mensual'}</span>` : '';
+  return `
+    <div class="card ${n.done?'done':''} ${n.important?'important':''}" data-id="${n.id}" draggable="true">
+      <button class="check ${n.done?'on':''}" data-act="check" aria-label="completar"></button>
+      <div class="cbody">
+        <div class="ctitle">${escapeHTML(n.title||'(sin título)')}</div>
+        ${n.text?`<div class="ctext">${escapeHTML(n.text)}</div>`:''}
+        <div class="cmeta">${timeTag}${prioTag}${catTag}${dateTag}${repeatTag}</div>
+      </div>
+      <button class="star ${n.important?'on':''}" data-act="star" aria-label="importante">${n.important?'★':'☆'}</button>
+      <button class="more" data-act="more" aria-label="más">⋯</button>
+    </div>`;
+}
+
+function wireCards(container){
+  container.querySelectorAll('.card').forEach(card=>{
+    const id=card.dataset.id;
+    card.querySelectorAll('[data-act]').forEach(btn=>{
+      btn.onclick=(e)=>{
+        e.stopPropagation();
+        const act=btn.dataset.act;
+        if(act==='check') toggleDone(id);
+        else if(act==='star') toggleImportant(id);
+        else if(act==='more') openNoteMenu(id);
+      };
+    });
+    // Tap en la tarjeta (fuera de botones) → editar
+    card.addEventListener('click',(e)=>{
+      if(e.target.closest('[data-act]'))return;
+      openEditor(id);
+    });
+    // Drag & drop (escritorio)
+    card.addEventListener('dragstart',(e)=>{
+      pendingDragId=id;
+      card.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+      try{ e.dataTransfer.setData('text/plain', id); }catch(_){}
+    });
+    card.addEventListener('dragend',()=>{
+      card.classList.remove('dragging');
+      pendingDragId=null;
+    });
+    // Long press móvil para "mover" (fallback accesible)
+    let pressT;
+    card.addEventListener('touchstart',()=>{
+      pressT=setTimeout(()=>{ navigator.vibrate && navigator.vibrate(15); openMoveMenu(id); }, 550);
+    },{passive:true});
+    card.addEventListener('touchend',()=>clearTimeout(pressT));
+    card.addEventListener('touchmove',()=>clearTimeout(pressT));
+  });
+  // Drop zones para drag&drop: los laterales del header (mover a anterior/siguiente)
+  // Simplificado: botones flotantes en el menú.
+}
+
+/* ---------- Vista todas las notas ---------- */
+function renderAllNotes(main){
+  const list=[...state.notes].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
+  if(!list.length){ main.innerHTML=`<div class="empty"><b>Sin notas</b>Empieza a escribir con el botón +</div>`; return; }
+  let lastDate='';
+  let html='';
+  list.forEach(n=>{
+    if(n.date!==lastDate){ lastDate=n.date; html+=`<div class="section-label">${fmtLong(n.date)} · ${fmtShort(n.date)}</div>`; }
+    html+=cardHTML(n);
+  });
+  main.innerHTML=html;
+  wireCards(main);
+}
+
+/* ---------- Importantes ---------- */
+function renderImportantes(main){
+  const list=state.notes.filter(n=>n.important).sort((a,b)=>a.date.localeCompare(b.date));
+  if(!list.length){ main.innerHTML=`<div class="empty"><b>Sin importantes</b>Marca con ⭐ lo que no quieras perder de vista.</div>`; return; }
+  main.innerHTML=list.map(n=>cardHTML(n)).join('');
+  wireCards(main);
+}
+
+/* ---------- Pendientes ---------- */
+function renderPendientes(main){
+  const t=todayISO();
+  const pend=state.notes.filter(n=>!n.done);
+  const late=pend.filter(n=>n.date<t).sort((a,b)=>a.date.localeCompare(b.date));
+  const today=pend.filter(n=>n.date===t);
+  const future=pend.filter(n=>n.date>t).sort((a,b)=>a.date.localeCompare(b.date));
+  let html='';
+  if(late.length){ html+=`<div class="section-label">⚠︎ Atrasadas</div>`+late.map(n=>cardHTML(n)).join(''); }
+  if(today.length){ html+=`<div class="section-label">📌 Hoy</div>`+today.map(n=>cardHTML(n)).join(''); }
+  if(future.length){ html+=`<div class="section-label">Próximas</div>`+future.map(n=>cardHTML(n)).join(''); }
+  if(!html) html=`<div class="empty"><b>Todo hecho</b>No tienes pendientes.</div>`;
+  main.innerHTML=html;
+  wireCards(main);
+}
+
+/* ---------- Buscar ---------- */
+function renderBuscar(main){
+  main.innerHTML=`
+    <div class="searchbox"><input id="q" type="text" placeholder="Buscar…" value="${escapeAttr(searchQuery)}" autocomplete="off"></div>
+    <div id="results" style="padding:0 14px"></div>`;
+  const q=main.querySelector('#q');
+  const results=main.querySelector('#results');
+  const run=()=>{
+    searchQuery=q.value.trim().toLowerCase();
+    if(!searchQuery){ results.innerHTML=`<div class="empty">Escribe algo para buscar.</div>`; return; }
+    const found=state.notes.filter(n=>
+      (n.title||'').toLowerCase().includes(searchQuery) ||
+      (n.text||'').toLowerCase().includes(searchQuery) ||
+      (n.category||'').toLowerCase().includes(searchQuery)
+    ).sort((a,b)=>b.date.localeCompare(a.date));
+    if(!found.length){ results.innerHTML=`<div class="empty">Sin resultados.</div>`; return; }
+    results.innerHTML=found.map(n=>cardHTML(n)).join('');
+    wireCards(results);
+  };
+  q.addEventListener('input',run);
+  run();
+  if(!searchQuery) setTimeout(()=>q.focus(),100);
+}
+
+/* ---------- Calendario ---------- */
+function renderCalendar(main){
+  const y=calMonth.getFullYear(), m=calMonth.getMonth();
+  const first=new Date(y,m,1);
+  const startWd=(first.getDay()+6)%7; // lunes=0
+  const daysInMonth=new Date(y,m+1,0).getDate();
+  const monthNames=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  let html=`<div class="cal">
+    <div class="cal-head">
+      <button id="calPrev">‹</button>
+      <div class="mtitle">${monthNames[m]} ${y}</div>
+      <button id="calNext">›</button>
+    </div>
+    <div class="cal-grid">
+      ${['L','M','X','J','V','S','D'].map(d=>`<div class="wd">${d}</div>`).join('')}`;
+  const prevDays=new Date(y,m,0).getDate();
+  for(let i=startWd;i>0;i--){
+    const d=prevDays-i+1;
+    html+=`<div class="cal-cell muted">${d}</div>`;
+  }
+  const t=todayISO();
+  for(let day=1;day<=daysInMonth;day++){
+    const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const notes=state.notes.filter(n=>n.date===iso);
+    const hasImp=notes.some(n=>n.important && !n.done);
+    const hasPend=notes.some(n=>!n.done);
+    const allDone=notes.length>0 && notes.every(n=>n.done);
+    let dots='';
+    if(notes.length){
+      dots=`<div class="dots">
+        ${hasImp?'<div class="dot imp"></div>':''}
+        ${hasPend&&!hasImp?'<div class="dot"></div>':''}
+        ${allDone?'<div class="dot done"></div>':''}
+      </div>`;
+    }
+    const cls=['cal-cell'];
+    if(iso===t)cls.push('today');
+    if(iso===currentDate)cls.push('selected');
+    html+=`<div class="${cls.join(' ')}" data-date="${iso}">${day}${dots}</div>`;
+  }
+  const total=startWd+daysInMonth;
+  const rest=(7-total%7)%7;
+  for(let i=1;i<=rest;i++){
+    html+=`<div class="cal-cell muted">${i}</div>`;
+  }
+  html+=`</div></div>`;
+  main.innerHTML=html;
+
+  main.querySelector('#calPrev').onclick=()=>{ calMonth=new Date(y,m-1,1); render(); };
+  main.querySelector('#calNext').onclick=()=>{ calMonth=new Date(y,m+1,1); render(); };
+  main.querySelectorAll('.cal-cell[data-date]').forEach(c=>{
+    c.onclick=()=>{ currentDate=c.dataset.date; currentTab='hoy'; render(); };
+  });
+}
+
+/* ============================================================
+   SHEET: Editor
+   ============================================================ */
+function openSheet(html){
+  const bg=document.getElementById('sheetBg');
+  const sheet=document.getElementById('sheet');
+  sheet.innerHTML=html;
+  bg.classList.add('open');
+  bg.onclick=(e)=>{ if(e.target===bg) closeSheet(); };
+}
+function closeSheet(){
+  document.getElementById('sheetBg').classList.remove('open');
+}
+
+function openEditor(id, defaultDate){
+  const editing = id ? state.notes.find(n=>n.id===id) : null;
+  const note = editing || {
+    title:'', text:'', date:defaultDate||todayISO(), time:'',
+    priority:'', category:'', important:false, repeat:''
+  };
+  openSheet(`
+    <h3>${editing?'Editar anotación':'Nueva anotación'}</h3>
+    <input type="text" id="f_title" placeholder="Título" value="${escapeAttr(note.title)}" autocomplete="off">
+    <textarea id="f_text" placeholder="Escribe aquí… (opcional)">${escapeHTML(note.text)}</textarea>
+    <div class="label">Fecha</div>
+    <div class="row">
+      <input type="date" id="f_date" value="${note.date}">
+      <input type="time" id="f_time" value="${note.time||''}">
+    </div>
+    <div class="label">Prioridad</div>
+    <div class="chiprow" id="prioRow">
+      <div class="chip ${note.priority===''?'on':''}" data-p="">—</div>
+      <div class="chip ${note.priority==='low'?'on':''}" data-p="low">Baja</div>
+      <div class="chip ${note.priority==='med'?'on':''}" data-p="med">Media</div>
+      <div class="chip ${note.priority==='high'?'on':''}" data-p="high">Alta</div>
+    </div>
+    <div class="label">Categoría (opcional)</div>
+    <input type="text" id="f_cat" placeholder="ej: llamadas, revisar, personas…" value="${escapeAttr(note.category)}" autocomplete="off">
+    <div class="label">Repetir</div>
+    <div class="chiprow" id="repRow">
+      <div class="chip ${note.repeat===''?'on':''}" data-r="">No</div>
+      <div class="chip ${note.repeat==='daily'?'on':''}" data-r="daily">Diaria</div>
+      <div class="chip ${note.repeat==='weekly'?'on':''}" data-r="weekly">Semanal</div>
+      <div class="chip ${note.repeat==='monthly'?'on':''}" data-r="monthly">Mensual</div>
+    </div>
+    <div class="chiprow" style="margin-top:6px">
+      <div class="chip ${note.important?'on':''}" id="impChip">⭐ Importante</div>
+    </div>
+    <div class="actions">
+      ${editing?`<button class="btn-ghost" id="bDel">Eliminar</button>`:''}
+      <button class="btn-primary" id="bSave">Guardar</button>
+    </div>
+  `);
+  const sheet=document.getElementById('sheet');
+  const titleEl=sheet.querySelector('#f_title');
+  setTimeout(()=>titleEl.focus(),150);
+
+  let priority=note.priority||'';
+  sheet.querySelectorAll('#prioRow .chip').forEach(c=>c.onclick=()=>{
+    priority=c.dataset.p;
+    sheet.querySelectorAll('#prioRow .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+  });
+  let repeat=note.repeat||'';
+  sheet.querySelectorAll('#repRow .chip').forEach(c=>c.onclick=()=>{
+    repeat=c.dataset.r;
+    sheet.querySelectorAll('#repRow .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+  });
+  let important=!!note.important;
+  sheet.querySelector('#impChip').onclick=()=>{
+    important=!important;
+    sheet.querySelector('#impChip').classList.toggle('on',important);
+  };
+  sheet.querySelector('#bSave').onclick=()=>{
+    const data={
+      title:sheet.querySelector('#f_title').value.trim(),
+      text:sheet.querySelector('#f_text').value.trim(),
+      date:sheet.querySelector('#f_date').value||todayISO(),
+      time:sheet.querySelector('#f_time').value||'',
+      priority, category:sheet.querySelector('#f_cat').value.trim(),
+      important, repeat
+    };
+    if(!data.title && !data.text){
+      // Usar el texto como título si solo escribió una cosa
+      data.title=data.text; data.text='';
+    }
+    if(!data.title && !data.text){ toast('Escribe algo'); return; }
+    if(editing){ updateNote(id,data); toast('Guardada'); }
+    else { addNote(data); toast('Añadida'); }
+    closeSheet();
+  };
+  if(editing){
+    sheet.querySelector('#bDel').onclick=()=>{
+      if(confirm('¿Eliminar esta anotación?')){
+        deleteNote(id); closeSheet(); toast('Eliminada');
+      }
+    };
+  }
+  // Enter en título guarda (si no hay saltos)
+  titleEl.addEventListener('keydown',(e)=>{
+    if(e.key==='Enter'){ e.preventDefault(); sheet.querySelector('#bSave').click(); }
+  });
+}
+
+/* ---------- Menú de la tarjeta (⋯) ---------- */
+function openNoteMenu(id){
+  const n=state.notes.find(x=>x.id===id); if(!n)return;
+  openSheet(`
+    <h3>${escapeHTML(n.title||'Anotación')}</h3>
+    <button class="moveopt" data-a="edit">✎ Editar</button>
+    <button class="moveopt" data-a="move">📅 Mover a otra fecha…</button>
+    <button class="moveopt" data-a="check">${n.done?'☐ Marcar como pendiente':'✓ Marcar como completada'}</button>
+    <button class="moveopt" data-a="star">${n.important?'☆ Quitar de importantes':'⭐ Marcar como importante'}</button>
+    <button class="moveopt" data-a="dup">⧉ Duplicar</button>
+    <button class="moveopt" data-a="del" style="color:#c0392b">🗑 Eliminar</button>
+    <div class="actions"><button class="btn-ghost" id="bClose">Cerrar</button></div>
+  `);
+  const sheet=document.getElementById('sheet');
+  sheet.querySelector('#bClose').onclick=closeSheet;
+  sheet.querySelectorAll('.moveopt').forEach(b=>b.onclick=()=>{
+    const a=b.dataset.a;
+    if(a==='edit'){ closeSheet(); setTimeout(()=>openEditor(id),50); }
+    else if(a==='move'){ openMoveMenu(id); }
+    else if(a==='check'){ toggleDone(id); closeSheet(); }
+    else if(a==='star'){ toggleImportant(id); closeSheet(); }
+    else if(a==='dup'){ duplicateNote(id); closeSheet(); }
+    else if(a==='del'){ if(confirm('¿Eliminar esta anotación?')){ deleteNote(id); closeSheet(); toast('Eliminada'); } }
+  });
+}
+
+/* ---------- Mover a… ---------- */
+function openMoveMenu(id){
+  const n=state.notes.find(x=>x.id===id); if(!n)return;
+  openSheet(`
+    <h3>Mover a…</h3>
+    <button class="moveopt" data-d="${todayISO()}">Hoy · ${fmtShort(todayISO())}</button>
+    <button class="moveopt" data-d="${addDays(todayISO(),1)}">Mañana · ${fmtShort(addDays(todayISO(),1))}</button>
+    <button class="moveopt" data-d="${nextWeekday(1)}">Próximo lunes · ${fmtShort(nextWeekday(1))}</button>
+    <button class="moveopt" data-d="${addDays(todayISO(),7)}">En una semana · ${fmtShort(addDays(todayISO(),7))}</button>
+    <div class="label" style="margin-top:10px">Elegir fecha</div>
+    <input type="date" id="m_date" value="${n.date}">
+    <div class="actions">
+      <button class="btn-ghost" id="bClose">Cancelar</button>
+      <button class="btn-primary" id="bDate">Mover</button>
+    </div>
+  `);
+  const sheet=document.getElementById('sheet');
+  sheet.querySelector('#bClose').onclick=closeSheet;
+  sheet.querySelectorAll('.moveopt').forEach(b=>b.onclick=()=>{
+    const d=b.dataset.d; moveNote(id,d); closeSheet();
+  });
+  sheet.querySelector('#bDate').onclick=()=>{
+    const d=sheet.querySelector('#m_date').value;
+    if(!d)return; moveNote(id,d); closeSheet();
+  };
+}
+
+/* ---------- Ajustes / Copia de seguridad ---------- */
+function openSettings(){
+  openSheet(`
+    <h3>Ajustes</h3>
+    <div class="label">Apariencia</div>
+    <div class="opt" id="optTheme">
+      <div>Modo oscuro<small>Cambia el aspecto del cuaderno</small></div>
+      <div class="switch ${state.theme==='dark'?'on':''}" id="swTheme"></div>
+    </div>
+    <div class="label" style="margin-top:16px">Copia de seguridad</div>
+    <div class="opt" id="optExport">
+      <div>Exportar copia de seguridad<small>Descarga un archivo .json con todo</small></div>
+      <div>⤓</div>
+    </div>
+    <div class="opt" id="optImport">
+      <div>Importar copia de seguridad<small>Reemplaza los datos actuales</small></div>
+      <div>⤒</div>
+    </div>
+    <div class="label" style="margin-top:16px">Datos</div>
+    <div class="opt" id="optWipe">
+      <div style="color:#c0392b">Borrar todos los datos<small>Esta acción no se puede deshacer</small></div>
+      <div style="color:#c0392b">🗑</div>
+    </div>
+    <div class="actions"><button class="btn-ghost" id="bClose">Cerrar</button></div>
+  `);
+  const sheet=document.getElementById('sheet');
+  sheet.querySelector('#bClose').onclick=closeSheet;
+  sheet.querySelector('#optTheme').onclick=()=>{ toggleTheme(); openSettings(); };
+  sheet.querySelector('#optExport').onclick=exportBackup;
+  sheet.querySelector('#optImport').onclick=importBackup;
+  sheet.querySelector('#optWipe').onclick=()=>{
+    if(confirm('¿Borrar TODOS los datos? Esta acción no se puede deshacer.')){
+      if(confirm('Confirma una vez más: se eliminarán todas tus anotaciones.')){
+        state.notes=[]; save(); closeSheet(); render(); toast('Datos borrados');
+      }
+    }
+  };
+}
+
+function exportBackup(){
+  const data={
+    app:'cuaderno',
+    version:1,
+    exportedAt:new Date().toISOString(),
+    notes:state.notes
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const ts=new Date().toISOString().slice(0,10);
+  a.href=url; a.download=`cuaderno-backup-${ts}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('Copia exportada');
+}
+
+function importBackup(){
+  const input=document.createElement('input');
+  input.type='file'; input.accept='application/json,.json';
+  input.onchange=()=>{
+    const f=input.files[0]; if(!f)return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      try{
+        const parsed=JSON.parse(reader.result);
+        const notes = Array.isArray(parsed)?parsed:parsed.notes;
+        if(!Array.isArray(notes)) throw new Error('Formato no válido');
+        const clean = notes.filter(n=>n && typeof n==='object' && typeof n.date==='string')
+          .map(n=>({
+            id:n.id||uid(),
+            title:n.title||'',
+            text:n.text||'',
+            date:n.date,
+            time:n.time||'',
+            priority:n.priority||'',
+            category:n.category||'',
+            important:!!n.important,
+            done:!!n.done,
+            repeat:n.repeat||'',
+            createdAt:n.createdAt||Date.now()
+          }));
+        if(!confirm(`Se importarán ${clean.length} anotaciones y se reemplazarán las actuales. ¿Continuar?`)) return;
+        state.notes=clean; save(); closeSheet(); render(); toast('Importado');
+      }catch(err){
+        alert('No se pudo leer el archivo: '+err.message);
+      }
+    };
+    reader.readAsText(f);
+  };
+  input.click();
+}
+
+/* ---------- Escape ---------- */
+function escapeHTML(s){
+  return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){ return escapeHTML(s); }
+
+/* ---------- Teclado ---------- */
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='Escape') closeSheet();
+  if(e.target.matches('input,textarea,select')) return;
+  if(e.key==='ArrowLeft' && currentTab==='hoy'){ currentDate=addDays(currentDate,-1); render(); }
+  if(e.key==='ArrowRight' && currentTab==='hoy'){ currentDate=addDays(currentDate,1); render(); }
+  if(e.key==='n' || e.key==='N'){ openEditor(null, currentTab==='hoy'?currentDate:todayISO()); }
+});
+
+/* ---------- Arranque ---------- */
+applyTheme();
+load();
+render();
+
+/* PWA */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
