@@ -67,28 +67,6 @@
   }
   .nb-btn .em{font-size:18px;line-height:1}
 
-  /* ---------- Modo familiar: todo más grande ---------- */
-  body[data-notebook="familiar"]{
-    --radius:18px;
-  }
-  body[data-notebook="familiar"] .ctitle{font-size:19px}
-  body[data-notebook="familiar"] .ctext{font-size:16px}
-  body[data-notebook="familiar"] .cmeta{font-size:13.5px}
-  body[data-notebook="familiar"] .check{width:30px;height:30px;flex-basis:30px}
-  body[data-notebook="familiar"] .check.on::after{font-size:19px;left:5px;top:-1px}
-  body[data-notebook="familiar"] .section-label{font-size:13px}
-  body[data-notebook="familiar"] .daytitle{font-size:19px}
-  body[data-notebook="familiar"] .daytitle small{font-size:12px}
-  body[data-notebook="familiar"] .chip{font-size:15px;padding:10px 14px}
-  body[data-notebook="familiar"] .sheet input[type=text],
-  body[data-notebook="familiar"] .sheet textarea,
-  body[data-notebook="familiar"] .sheet input[type=date],
-  body[data-notebook="familiar"] .sheet input[type=time],
-  body[data-notebook="familiar"] .sheet select{font-size:17px;padding:14px 12px}
-  body[data-notebook="familiar"] .moveopt{font-size:17px;padding:16px 14px}
-  body[data-notebook="familiar"] .fab{width:66px;height:66px;font-size:34px}
-  body[data-notebook="familiar"] .card{padding:16px 16px}
-
   /* ---------- Header ---------- */
   header{background:var(--paper);border-bottom:1px solid var(--paper-line);padding:10px 14px 8px;
     position:sticky;top:0;z-index:20}
@@ -107,21 +85,38 @@
     padding:6px 8px;border-radius:10px;cursor:pointer}
   .iconbtn:active{background:var(--paper-line)}
 
-  /* ---------- Late banner ---------- */
-  .late{background:linear-gradient(90deg,#fff4e0,#ffe9cc);border:1px solid var(--accent-soft);
-    color:#7a3b12;border-radius:12px;padding:8px 12px;margin:10px 14px 0;
-    font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-  [data-theme="dark"] .late{background:#2b2118;border-color:#5a3a22;color:#f0c79a}
-  .late button{background:#7a3b12;color:#fff;border:none;border-radius:14px;
-    padding:4px 10px;font-size:12px;font-weight:600;cursor:pointer}
+  /* ---------- Header familiar (grande) ---------- */
+  .fam-header{padding:18px 18px 14px;background:var(--paper);
+    border-bottom:1px solid var(--paper-line);position:sticky;top:0;z-index:20}
+  .fam-hello{font-size:26px;font-weight:700;line-height:1.2;margin-bottom:4px}
+  .fam-date{font-size:17px;color:var(--ink-soft);text-transform:capitalize;margin-bottom:10px}
+  .fam-daynav{display:flex;align-items:center;gap:8px;justify-content:space-between}
+  .fam-daynav button{
+    background:var(--bg);border:1.5px solid var(--paper-line);border-radius:14px;
+    padding:12px 20px;font-size:22px;color:var(--ink);cursor:pointer;font-weight:700;
+    min-width:64px;
+  }
+  .fam-daynav .fam-day-label{
+    flex:1;text-align:center;font-size:19px;font-weight:700;
+    background:var(--accent-soft);padding:12px 8px;border-radius:14px;
+  }
+  .fam-daynav .fam-day-label.home{background:var(--accent);color:#fff}
+  .fam-settings-row{display:flex;justify-content:flex-end;margin-top:8px}
+  .fam-settings-row button{
+    background:transparent;border:none;color:var(--ink-soft);font-size:14px;
+    padding:6px 10px;border-radius:10px;cursor:pointer;
+  }
 
-  /* ---------- Lista ---------- */
-  main{flex:1;padding:12px 14px 130px}
+  /* ---------- Main ---------- */
+  main{flex:1;padding:12px 14px 140px}
+  main.fam{padding:14px 14px 160px}
   .section-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
     color:var(--ink-soft);font-weight:600;margin:14px 4px 8px;display:flex;align-items:center;gap:6px}
   .empty{text-align:center;color:var(--ink-soft);font-size:14px;padding:50px 20px;line-height:1.6}
   .empty b{color:var(--ink);display:block;font-size:16px;margin-bottom:6px}
+  main.fam .empty{font-size:17px;padding:60px 24px}
 
+  /* ---------- Tarjeta trabajo ---------- */
   .card{background:var(--paper);border:1px solid var(--paper-line);
     border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;
     box-shadow:var(--shadow);display:flex;gap:10px;align-items:flex-start;
@@ -130,20 +125,17 @@
   .card.done .ctitle{text-decoration:line-through}
   .card.important{border-left:4px solid var(--important)}
   .card.dragging{opacity:.4;transform:scale(.98)}
-
   .check{flex:0 0 24px;width:24px;height:24px;border:2px solid var(--ink-soft);
     border-radius:6px;margin-top:2px;cursor:pointer;position:relative;background:transparent}
   .check.on{background:var(--done);border-color:var(--done)}
   .check.on::after{content:"✓";color:#fff;font-size:15px;position:absolute;
     left:4px;top:-1px;font-weight:700}
-
   .cbody{flex:1;min-width:0}
   .ctitle{font-size:15px;font-weight:600;line-height:1.3;word-wrap:break-word}
   .ctext{font-size:13.5px;color:var(--ink-soft);margin-top:3px;
     white-space:pre-wrap;word-wrap:break-word;line-height:1.4}
   .cmeta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;
     margin-top:6px;font-size:11.5px;color:var(--ink-soft)}
-  .cat-emoji{font-size:20px;line-height:1;flex:0 0 auto;margin-top:1px}
   .tag{background:var(--paper-line);padding:2px 8px;border-radius:10px;
     font-size:10.5px;letter-spacing:.4px;text-transform:uppercase;font-weight:600}
   .tag.prio-high{background:#f7d0c0;color:#8a2d10}
@@ -158,6 +150,115 @@
   .card .more{background:transparent;border:none;font-size:18px;cursor:pointer;
     color:var(--ink-soft);padding:0 4px}
 
+  /* ---------- Tarjeta familiar (grande y clara) ---------- */
+  .fam-card{
+    background:var(--paper);
+    border:1.5px solid var(--paper-line);
+    border-radius:18px;
+    padding:16px 16px 14px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow);
+    display:flex;gap:12px;align-items:flex-start;
+    position:relative;
+    transition:opacity .15s;
+  }
+  .fam-card.done{opacity:.5}
+  .fam-card.done .fam-title{text-decoration:line-through}
+  .fam-card.cat-medicacion{border-left:5px solid #e07a7a;background:linear-gradient(to right,#fff6f6 0%,var(--paper) 60%)}
+  .fam-card.cat-medico{border-left:5px solid #6a9ee0;background:linear-gradient(to right,#f3f8ff 0%,var(--paper) 60%)}
+  .fam-card.cat-compras{border-left:5px solid #7ab97a;background:linear-gradient(to right,#f4fbf4 0%,var(--paper) 60%)}
+  .fam-card.cat-peluqueria{border-left:5px solid #c77ac7;background:linear-gradient(to right,#fdf5fd 0%,var(--paper) 60%)}
+  .fam-card.cat-llamadas{border-left:5px solid #e0b06a;background:linear-gradient(to right,#fffaf0 0%,var(--paper) 60%)}
+  .fam-card.cat-tramites{border-left:5px solid #9c9cc7;background:linear-gradient(to right,#f7f7ff 0%,var(--paper) 60%)}
+  .fam-card.cat-casa{border-left:5px solid #b08d6a;background:linear-gradient(to right,#fbf6f0 0%,var(--paper) 60%)}
+  [data-theme="dark"] .fam-card.cat-medicacion,
+  [data-theme="dark"] .fam-card.cat-medico,
+  [data-theme="dark"] .fam-card.cat-compras,
+  [data-theme="dark"] .fam-card.cat-peluqueria,
+  [data-theme="dark"] .fam-card.cat-llamadas,
+  [data-theme="dark"] .fam-card.cat-tramites,
+  [data-theme="dark"] .fam-card.cat-casa{background:var(--paper)}
+
+  .fam-check{
+    flex:0 0 34px;width:34px;height:34px;border:3px solid var(--ink-soft);
+    border-radius:10px;margin-top:2px;cursor:pointer;position:relative;background:transparent;
+  }
+  .fam-check.on{background:var(--done);border-color:var(--done)}
+  .fam-check.on::after{
+    content:"✓";color:#fff;font-size:20px;position:absolute;
+    left:6px;top:-2px;font-weight:800;
+  }
+  .fam-body{flex:1;min-width:0}
+  .fam-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:6px}
+  .fam-emoji{font-size:30px;line-height:1}
+  .fam-cat-label{
+    font-size:11px;letter-spacing:1.2px;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;margin-top:6px;
+  }
+  .fam-hour{
+    font-size:24px;font-weight:800;color:var(--accent);
+    letter-spacing:-.5px;line-height:1;margin-left:auto;white-space:nowrap;
+  }
+  .fam-title{font-size:20px;font-weight:700;line-height:1.25;margin-bottom:6px}
+  .fam-text{font-size:16px;color:var(--ink-soft);line-height:1.4;white-space:pre-wrap;word-wrap:break-word}
+  .fam-line{
+    display:flex;align-items:center;gap:6px;font-size:15px;color:var(--ink-soft);
+    margin-top:8px;line-height:1.35;
+  }
+  .fam-line .em{font-size:18px}
+  .fam-line strong{color:var(--ink);font-weight:600}
+  .fam-alert{
+    display:flex;align-items:center;gap:8px;
+    background:#fff4dc;border:1px solid #f0d6a8;
+    padding:8px 12px;border-radius:10px;margin-top:10px;
+    font-size:14px;color:#7a5410;font-weight:600;
+  }
+  [data-theme="dark"] .fam-alert{background:#3a2e18;border-color:#5a4520;color:#ffdca1}
+  .fam-actions{
+    display:flex;gap:8px;margin-top:12px;border-top:1px dashed var(--paper-line);padding-top:10px;
+  }
+  .fam-actions button{
+    flex:1;background:var(--bg);border:1px solid var(--paper-line);
+    border-radius:10px;padding:10px 8px;font-size:14px;font-weight:600;
+    color:var(--ink);cursor:pointer;font-family:inherit;
+  }
+  .fam-actions button:active{background:var(--paper-line)}
+
+  /* ---------- Resumen familiar ---------- */
+  .fam-summary{
+    display:flex;gap:8px;margin:4px 0 14px;
+  }
+  .fam-summary .box{
+    flex:1;background:var(--bg);border:1px solid var(--paper-line);
+    border-radius:14px;padding:12px 10px;text-align:center;
+  }
+  .fam-summary .num{font-size:26px;font-weight:800;color:var(--accent);line-height:1}
+  .fam-summary .lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;margin-top:4px}
+
+  /* ---------- Secciones desplegables (familiar) ---------- */
+  .fam-fold{
+    background:var(--bg);border:1px solid var(--paper-line);border-radius:14px;
+    margin-bottom:14px;overflow:hidden;
+  }
+  .fam-fold>summary{
+    list-style:none;cursor:pointer;padding:14px 16px;
+    display:flex;align-items:center;gap:10px;font-size:17px;font-weight:700;
+    color:var(--ink);
+  }
+  .fam-fold>summary::-webkit-details-marker{display:none}
+  .fam-fold>summary .arrow{
+    margin-left:auto;transition:transform .2s;color:var(--ink-soft);font-size:14px;
+  }
+  .fam-fold[open]>summary .arrow{transform:rotate(90deg)}
+  .fam-fold>summary .badge{
+    background:var(--accent);color:#fff;border-radius:12px;
+    padding:2px 10px;font-size:13px;font-weight:700;
+  }
+  .fam-fold>summary .badge.warn{background:#c9762a}
+  .fam-fold>summary .badge.ok{background:var(--done)}
+  .fam-fold-body{padding:0 10px 10px}
+
   /* ---------- FAB ---------- */
   .fab{position:fixed;right:calc(50% - 320px + 20px);bottom:calc(30px + env(safe-area-inset-bottom));
     width:58px;height:58px;border-radius:50%;background:var(--accent);color:#fff;
@@ -165,6 +266,7 @@
     cursor:pointer;z-index:30;display:flex;align-items:center;justify-content:center}
   @media(max-width:680px){.fab{right:20px}}
   .fab:active{transform:scale(.94)}
+  body[data-notebook="familiar"] .fab{width:70px;height:70px;font-size:36px;bottom:calc(36px + env(safe-area-inset-bottom))}
 
   /* ---------- Tabs ---------- */
   nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--paper);
@@ -189,10 +291,16 @@
     animation:slideup .22s ease-out}
   @keyframes slideup{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
   .sheet h3{margin:0 0 12px;font-size:16px;font-weight:600}
+  body[data-notebook="familiar"] .sheet h3{font-size:19px}
   .sheet input[type=text],.sheet textarea,.sheet input[type=date],.sheet input[type=time],.sheet select{
     width:100%;padding:11px 12px;border:1px solid var(--paper-line);border-radius:10px;
     font-size:15px;font-family:inherit;background:var(--bg);color:var(--ink);margin-bottom:10px;
     -webkit-appearance:none;appearance:none}
+  body[data-notebook="familiar"] .sheet input[type=text],
+  body[data-notebook="familiar"] .sheet textarea,
+  body[data-notebook="familiar"] .sheet input[type=date],
+  body[data-notebook="familiar"] .sheet input[type=time],
+  body[data-notebook="familiar"] .sheet select{font-size:17px;padding:14px 12px}
   .sheet textarea{min-height:90px;resize:vertical}
   .row{display:flex;gap:8px}
   .row>*{flex:1}
@@ -200,18 +308,33 @@
   .chip{padding:7px 12px;border-radius:16px;border:1px solid var(--paper-line);
     background:var(--bg);font-size:13px;cursor:pointer;color:var(--ink)}
   .chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  body[data-notebook="familiar"] .chip{font-size:15px;padding:12px 16px;border-radius:14px}
+  .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+  .cat-btn{
+    display:flex;align-items:center;gap:8px;padding:14px 12px;
+    border:2px solid var(--paper-line);border-radius:14px;background:var(--bg);
+    font-size:16px;font-weight:600;color:var(--ink);cursor:pointer;font-family:inherit;
+    text-align:left;
+  }
+  .cat-btn .em{font-size:22px}
+  .cat-btn.on{border-color:var(--accent);background:var(--accent-soft);color:#fff}
+  .cat-btn.on .em{filter:brightness(1.2)}
   .sheet .actions{display:flex;gap:8px;margin-top:8px}
   .sheet .actions button{flex:1;padding:12px;border-radius:12px;border:none;
     font-size:15px;font-weight:600;cursor:pointer}
+  body[data-notebook="familiar"] .sheet .actions button{font-size:17px;padding:16px}
   .btn-primary{background:var(--accent);color:#fff}
   .btn-ghost{background:var(--bg);color:var(--ink);border:1px solid var(--paper-line)!important}
   .label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);
     font-weight:600;margin:2px 2px 6px}
+  body[data-notebook="familiar"] .label{font-size:13px}
   .moveopt{display:block;width:100%;text-align:left;padding:14px 12px;background:var(--bg);
     border:1px solid var(--paper-line);border-radius:12px;margin-bottom:8px;font-size:15px;
     color:var(--ink);cursor:pointer;font-family:inherit}
   .moveopt:active{background:var(--paper-line)}
+  body[data-notebook="familiar"] .moveopt{font-size:17px;padding:18px 14px}
 
+  /* ---------- Calendario ---------- */
   .cal{padding:8px 12px 110px}
   .cal-head{display:flex;align-items:center;justify-content:space-between;padding:8px 6px 12px}
   .cal-head button{background:transparent;border:none;font-size:20px;padding:6px 12px;cursor:pointer;color:var(--ink)}
@@ -228,18 +351,21 @@
   .cal-cell .dot{width:4px;height:4px;border-radius:50%;background:var(--accent)}
   .cal-cell .dot.imp{background:var(--important)}
   .cal-cell .dot.done{background:var(--done)}
-  body[data-notebook="familiar"] .cal-cell{font-size:16px}
+  body[data-notebook="familiar"] .cal-cell{font-size:17px}
+  body[data-notebook="familiar"] .cal-head .mtitle{font-size:19px}
 
   .searchbox{padding:10px 14px}
   .searchbox input{width:100%;padding:12px 14px;border-radius:14px;
     border:1px solid var(--paper-line);background:var(--bg);color:var(--ink);
     font-size:16px;font-family:inherit}
+  body[data-notebook="familiar"] .searchbox input{font-size:17px;padding:14px}
 
   .toast{position:fixed;left:50%;bottom:calc(80px + env(safe-area-inset-bottom));
     transform:translateX(-50%);background:#2b2b2b;color:#fff;
     padding:10px 18px;border-radius:20px;font-size:14px;z-index:60;
     opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+  body[data-notebook="familiar"] .toast{font-size:16px;padding:14px 22px}
 
   .settings{padding:16px 16px 130px}
   .settings h3{font-size:14px;letter-spacing:1px;text-transform:uppercase;
@@ -248,6 +374,7 @@
     padding:14px;background:var(--bg);border:1px solid var(--paper-line);
     border-radius:12px;margin-bottom:8px;font-size:15px;cursor:pointer}
   .settings .opt small{display:block;color:var(--ink-soft);font-size:12px;margin-top:2px}
+  body[data-notebook="familiar"] .settings .opt{font-size:17px;padding:16px}
   .switch{width:46px;height:28px;border-radius:14px;background:#bbb;
     position:relative;transition:.2s;flex:0 0 auto}
   .switch.on{background:var(--accent)}
@@ -259,7 +386,6 @@
 <body data-notebook="trabajo">
 <div id="app">
 
-  <!-- Selector de cuaderno -->
   <div class="notebooks" id="notebooks">
     <button class="nb-btn" data-nb="trabajo"><span class="em">📘</span> Trabajo</button>
     <button class="nb-btn" data-nb="familiar"><span class="em">🏠</span> Familia</button>
@@ -275,22 +401,23 @@
 
 <script>
 /* =========================================================
-   CUADERNO PERSONAL — Trabajo + Familia
+   CUADERNO PERSONAL — Trabajo + Familia (v3)
    ========================================================= */
 
-const STORE_KEY='cuaderno.v2';
+const STORE_KEY='cuaderno.v2'; // ← MISMA CLAVE. Los datos actuales se conservan.
 const THEME_KEY='cuaderno.theme';
 const NOTEBOOK_KEY='cuaderno.notebook';
+const NAME_KEY='cuaderno.famName';
 
 const CATEGORIAS_FAMILIA=[
-  {id:'medicacion', emoji:'💊', label:'Medicación'},
-  {id:'medico',     emoji:'🩺', label:'Médico'},
-  {id:'compras',    emoji:'🛒', label:'Compras'},
-  {id:'peluqueria', emoji:'💇', label:'Peluquería'},
-  {id:'llamadas',   emoji:'📞', label:'Llamadas'},
-  {id:'tramites',   emoji:'📄', label:'Trámites'},
-  {id:'casa',       emoji:'🏠', label:'Casa'},
-  {id:'otros',      emoji:'📌', label:'Otros'}
+  {id:'medicacion', emoji:'💊', label:'Medicación', tipo:'PASTILLA'},
+  {id:'medico',     emoji:'🩺', label:'Médico',     tipo:'MÉDICO'},
+  {id:'compras',    emoji:'🛒', label:'Compras',    tipo:'COMPRAS'},
+  {id:'peluqueria', emoji:'💇', label:'Peluquería', tipo:'PELUQUERÍA'},
+  {id:'llamadas',   emoji:'📞', label:'Llamadas',   tipo:'LLAMADAS'},
+  {id:'tramites',   emoji:'📄', label:'Trámites',   tipo:'TRÁMITES'},
+  {id:'casa',       emoji:'🏠', label:'Casa',       tipo:'CASA'},
+  {id:'otros',      emoji:'📌', label:'Otros',      tipo:'OTROS'}
 ];
 
 let state={
@@ -299,7 +426,8 @@ let state={
     familiar:{notes:[]}
   },
   theme: localStorage.getItem(THEME_KEY)||'light',
-  currentNotebook: localStorage.getItem(NOTEBOOK_KEY)||'trabajo'
+  currentNotebook: localStorage.getItem(NOTEBOOK_KEY)||'trabajo',
+  famName: localStorage.getItem(NAME_KEY)||''
 };
 let currentDate=todayISO();
 let currentTab='hoy';
@@ -315,10 +443,19 @@ function fmtLong(iso){
   const d=parseISO(iso);
   const wd=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][d.getDay()];
   const mn=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][d.getMonth()];
-  return `${wd} ${d.getDate()} ${mn}`;
+  return `${wd} ${d.getDate()} de ${mn}`;
 }
 function fmtShort(iso){const d=parseISO(iso);return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}
 function nextWeekday(target){const d=new Date();const cur=d.getDay()===0?7:d.getDay();let diff=(target-cur+7)%7;if(diff===0)diff=7;d.setDate(d.getDate()+diff);return toISO(d);}
+function greeting(){
+  const h=new Date().getHours();
+  let g;
+  if(h<6)g='Buenas noches';
+  else if(h<13)g='Buenos días';
+  else if(h<20)g='Buenas tardes';
+  else g='Buenas noches';
+  return state.famName ? `${g}, ${state.famName}` : g;
+}
 
 /* ---------- Persistencia ---------- */
 function load(){
@@ -384,6 +521,7 @@ function addNote(n){
     category:n.category||'',
     place:n.place||'',
     alert:n.alert||'',
+    dose:n.dose||'',
     important:!!n.important,
     done:false,
     repeat:n.repeat||'',
@@ -438,6 +576,7 @@ function notesForDate(iso){
   });
 }
 function lateNotes(){const t=todayISO();return notes().filter(n=>!n.done&&n.date<t);}
+function catInfo(id){return CATEGORIAS_FAMILIA.find(c=>c.id===id)||CATEGORIAS_FAMILIA[CATEGORIAS_FAMILIA.length-1];}
 
 /* ---------- Render principal ---------- */
 function render(){
@@ -452,12 +591,15 @@ function render(){
   const tabs=document.getElementById('tabs');
   const fab=document.getElementById('fab');
 
+  const esFam = state.currentNotebook==='familiar';
+  main.classList.toggle('fam', esFam);
+
   const tabDefs=[
     {id:'hoy',ico:'📅',label:'Hoy'},
     {id:'calendario',ico:'📆',label:'Calendario'},
     {id:'notas',ico:'📝',label:'Notas'},
-    {id:'importantes',ico:'⭐',label:'Importantes'},
-    {id:'pendientes',ico:'📌',label:'Pendientes'},
+    {id:'importantes',ico:'⭐',label: esFam?'Importantes':'Importantes'},
+    {id:'pendientes',ico:'📌',label: esFam?'Pendientes':'Pendientes'},
     {id:'buscar',ico:'🔎',label:'Buscar'},
   ];
   tabs.innerHTML=tabDefs.map(t=>
@@ -472,56 +614,56 @@ function render(){
   });
 
   if(currentTab==='hoy'){
-    header.innerHTML=`
-      <div class="toprow">
-        <div class="daynav">
-          <button id="prev">‹</button>
-          <div class="daytitle">
-            ${isToday(currentDate)?'Hoy':''}
-            <span style="display:block">${fmtLong(currentDate)}</span>
-            <small>${parseISO(currentDate).getFullYear()}</small>
-          </div>
-          <button id="next">›</button>
-        </div>
-        <div style="display:flex;gap:2px;align-items:center">
-          <button class="todaybtn" id="goToday">HOY</button>
-          <button class="iconbtn" id="settings">⚙︎</button>
-        </div>
-      </div>`;
-    header.querySelector('#prev').onclick=()=>{currentDate=addDays(currentDate,-1);render();};
-    header.querySelector('#next').onclick=()=>{currentDate=addDays(currentDate,1);render();};
-    header.querySelector('#goToday').onclick=()=>{currentDate=todayISO();render();};
-    header.querySelector('#settings').onclick=openSettings;
-    fab.style.display='flex';
-    renderDay(main);
+    if(esFam){ renderFamHeader(header); fab.style.display='flex'; renderFamDay(main); }
+    else { renderWorkHeader(header); fab.style.display='flex'; renderDay(main); }
   } else if(currentTab==='calendario'){
-    header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Calendario<small>toca un día para abrirlo</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    if(esFam){
+      header.innerHTML=`<div class="fam-header"><div class="fam-hello">Calendario</div><div class="fam-date">Toca un día para abrirlo</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>`;
+    } else {
+      header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Calendario<small>toca un día para abrirlo</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    }
     header.querySelector('#settings').onclick=openSettings;
     fab.style.display='flex';
     renderCalendar(main);
   } else if(currentTab==='notas'){
-    header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Notas<small>todas las anotaciones</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    if(esFam){
+      header.innerHTML=`<div class="fam-header"><div class="fam-hello">Notas</div><div class="fam-date">Todas las anotaciones</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>`;
+    } else {
+      header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Notas<small>todas las anotaciones</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    }
     header.querySelector('#settings').onclick=openSettings;
     fab.style.display='flex';
     renderAllNotes(main);
   } else if(currentTab==='importantes'){
-    header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Importantes<small>marcadas con ⭐</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    if(esFam){
+      header.innerHTML=`<div class="fam-header"><div class="fam-hello">Importantes</div><div class="fam-date">Marcadas con ⭐</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>`;
+    } else {
+      header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Importantes<small>marcadas con ⭐</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    }
     header.querySelector('#settings').onclick=openSettings;
     fab.style.display='flex';
     renderImportantes(main);
   } else if(currentTab==='pendientes'){
-    header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Pendientes<small>sin completar</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    if(esFam){
+      header.innerHTML=`<div class="fam-header"><div class="fam-hello">Pendientes</div><div class="fam-date">Sin completar</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>`;
+    } else {
+      header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Pendientes<small>sin completar</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    }
     header.querySelector('#settings').onclick=openSettings;
     fab.style.display='flex';
     renderPendientes(main);
   } else if(currentTab==='buscar'){
-    header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Buscar<small>en título, texto, categoría, lugar</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    if(esFam){
+      header.innerHTML=`<div class="fam-header"><div class="fam-hello">Buscar</div><div class="fam-date">En título, texto, lugar…</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>`;
+    } else {
+      header.innerHTML=`<div class="toprow"><div class="daytitle" style="text-align:left">Buscar<small>en título, texto, categoría, lugar</small></div><button class="iconbtn" id="settings">⚙︎</button></div>`;
+    }
     header.querySelector('#settings').onclick=openSettings;
     fab.style.display='none';
     renderBuscar(main);
   }
 
-  if(currentTab==='hoy'){
+  if(currentTab==='hoy' && !esFam){
     const late=lateNotes();
     if(late.length){
       const banner=document.createElement('div');
@@ -537,12 +679,54 @@ function render(){
 
 function isToday(iso){return iso===todayISO();}
 
-/* ---------- Render día ---------- */
+/* ---------- Header trabajo ---------- */
+function renderWorkHeader(header){
+  header.innerHTML=`
+    <div class="toprow">
+      <div class="daynav">
+        <button id="prev">‹</button>
+        <div class="daytitle">
+          ${isToday(currentDate)?'Hoy':''}
+          <span style="display:block">${fmtLong(currentDate)}</span>
+          <small>${parseISO(currentDate).getFullYear()}</small>
+        </div>
+        <button id="next">›</button>
+      </div>
+      <div style="display:flex;gap:2px;align-items:center">
+        <button class="todaybtn" id="goToday">HOY</button>
+        <button class="iconbtn" id="settings">⚙︎</button>
+      </div>
+    </div>`;
+  header.querySelector('#prev').onclick=()=>{currentDate=addDays(currentDate,-1);render();};
+  header.querySelector('#next').onclick=()=>{currentDate=addDays(currentDate,1);render();};
+  header.querySelector('#goToday').onclick=()=>{currentDate=todayISO();render();};
+  header.querySelector('#settings').onclick=openSettings;
+}
+
+/* ---------- Header familiar (grande) ---------- */
+function renderFamHeader(header){
+  const esHoy = isToday(currentDate);
+  header.innerHTML=`
+    <div class="fam-hello">${greeting()}</div>
+    <div class="fam-date">${fmtLong(currentDate)} · ${parseISO(currentDate).getFullYear()}</div>
+    <div class="fam-daynav">
+      <button id="prev">‹</button>
+      <div class="fam-day-label ${esHoy?'home':''}" id="goToday">${esHoy?'HOY':'Ir a HOY'}</div>
+      <button id="next">›</button>
+    </div>
+    <div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div>
+  `;
+  header.querySelector('#prev').onclick=()=>{currentDate=addDays(currentDate,-1);render();};
+  header.querySelector('#next').onclick=()=>{currentDate=addDays(currentDate,1);render();};
+  header.querySelector('#goToday').onclick=()=>{currentDate=todayISO();render();};
+  header.querySelector('#settings').onclick=openSettings;
+}
+
+/* ---------- Render trabajo ---------- */
 function renderDay(main){
   const list=notesForDate(currentDate);
   if(!list.length){
-    const esFam=state.currentNotebook==='familiar';
-    main.innerHTML=`<div class="empty"><b>${esFam?'Sin nada para hoy':'Nada por aquí'}</b>Pulsa <b style="display:inline">+</b> para escribir algo.</div>`;
+    main.innerHTML=`<div class="empty"><b>Nada por aquí</b>Pulsa <b style="display:inline">+</b> para escribir algo.</div>`;
     return;
   }
   const pend=list.filter(n=>!n.done);
@@ -560,30 +744,135 @@ function renderDay(main){
 function cardHTML(n){
   const prioTag=n.priority?`<span class="tag prio-${n.priority}">${n.priority==='high'?'Alta':n.priority==='med'?'Media':'Baja'}</span>`:'';
   const timeTag=n.time?`<span class="tag">🕒 ${n.time}</span>`:'';
-  const placeTag=n.place?`<span class="tag">📍 ${escapeHTML(n.place)}</span>`:'';
-  const alertTag=n.alert?`<span class="tag">⏰ ${escapeHTML(n.alert)}</span>`:'';
-  const catTag=(n.category&&state.currentNotebook==='trabajo')?`<span class="tag">${escapeHTML(n.category)}</span>`:'';
+  const catTag=n.category?`<span class="tag">${escapeHTML(n.category)}</span>`:'';
   const dateTag=(n.date!==currentDate&&currentTab!=='hoy')?`<span class="tag">${fmtShort(n.date)}</span>`:'';
   const repeatTag=n.repeat?`<span class="tag">🔁 ${n.repeat==='daily'?'diaria':n.repeat==='weekly'?'semanal':'mensual'}</span>`:'';
-  let catEmoji='';
-  if(state.currentNotebook==='familiar' && n.category){
-    const c=CATEGORIAS_FAMILIA.find(x=>x.id===n.category);
-    if(c) catEmoji=`<span class="cat-emoji" title="${c.label}">${c.emoji}</span>`;
-  }
   return `
     <div class="card ${n.done?'done':''} ${n.important?'important':''}" data-id="${n.id}" draggable="true">
-      ${catEmoji}
       <button class="check ${n.done?'on':''}" data-act="check" aria-label="completar"></button>
       <div class="cbody">
         <div class="ctitle">${escapeHTML(n.title||'(sin título)')}</div>
         ${n.text?`<div class="ctext">${escapeHTML(n.text)}</div>`:''}
-        <div class="cmeta">${timeTag}${prioTag}${catTag}${placeTag}${alertTag}${dateTag}${repeatTag}</div>
+        <div class="cmeta">${timeTag}${prioTag}${catTag}${dateTag}${repeatTag}</div>
       </div>
       <button class="star ${n.important?'on':''}" data-act="star" aria-label="importante">${n.important?'★':'☆'}</button>
       <button class="more" data-act="more" aria-label="más">⋯</button>
     </div>`;
 }
 
+/* ---------- Render familiar (tarjetas grandes) ---------- */
+function renderFamDay(main){
+  const t=todayISO();
+  const all=notes();
+  const dayList=notesForDate(currentDate);
+  const lateAll=all.filter(n=>!n.done&&n.date<t).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+
+  const dayPend=dayList.filter(n=>!n.done);
+  const dayDone=dayList.filter(n=>n.done);
+  const dayConHora=dayPend.filter(n=>n.time).sort((a,b)=>a.time.localeCompare(b.time));
+  const daySinHora=dayPend.filter(n=>!n.time);
+
+  const resumen = `
+    <div class="fam-summary">
+      <div class="box"><div class="num">${dayPend.length}</div><div class="lbl">Pendientes hoy</div></div>
+      <div class="box"><div class="num">${dayDone.length}</div><div class="lbl">Hechas</div></div>
+      <div class="box"><div class="num">${lateAll.length}</div><div class="lbl">Atrasadas</div></div>
+    </div>`;
+
+  if(!dayList.length && !lateAll.length){
+    main.innerHTML = resumen + `<div class="empty"><b>Sin nada para hoy</b>Toca el botón <b style="display:inline">+</b> para añadir un recordatorio.</div>`;
+    return;
+  }
+
+  let html = resumen;
+
+  // Atrasadas (colapsadas por defecto)
+  if(lateAll.length){
+    html+=`
+      <details class="fam-fold" ${lateAll.length<=3?'open':''}>
+        <summary><span>⚠️</span> Atrasado <span class="badge warn">${lateAll.length}</span><span class="arrow">›</span></summary>
+        <div class="fam-fold-body">${lateAll.map(n=>famCardHTML(n)).join('')}</div>
+      </details>`;
+  }
+
+  // Hoy con hora
+  if(dayConHora.length){
+    html += `<div class="section-label">🕒 Con hora</div>` + dayConHora.map(n=>famCardHTML(n)).join('');
+  }
+
+  // Hoy sin hora
+  if(daySinHora.length){
+    html += `<div class="section-label">📌 Sin hora</div>` + daySinHora.map(n=>famCardHTML(n)).join('');
+  }
+
+  // Hechas (colapsadas si hay más de 2)
+  if(dayDone.length){
+    html+=`
+      <details class="fam-fold" ${dayDone.length<=2?'open':''}>
+        <summary><span>✅</span> Hecho hoy <span class="badge ok">${dayDone.length}</span><span class="arrow">›</span></summary>
+        <div class="fam-fold-body">${dayDone.map(n=>famCardHTML(n)).join('')}</div>
+      </details>`;
+  }
+
+  main.innerHTML = html;
+  wireFamCards(main);
+}
+
+function famCardHTML(n){
+  const cat=catInfo(n.category);
+  const isLate = !n.done && n.date < todayISO();
+  const lines=[];
+  if(n.dose) lines.push(`<div class="fam-line"><span class="em">💊</span> Dosis: <strong>${escapeHTML(n.dose)}</strong></div>`);
+  if(n.place) lines.push(`<div class="fam-line"><span class="em">📍</span> ${escapeHTML(n.place)}</div>`);
+  const alertHTML = n.alert ? `<div class="fam-alert">⏰ Aviso: ${escapeHTML(n.alert)}</div>` : '';
+  const lateHTML = isLate ? `<div class="fam-alert" style="background:#fde2d4;border-color:#e8b48a;color:#8a2d10">⚠️ Pendiente de ${fmtShort(n.date)}</div>` : '';
+
+  return `
+    <div class="fam-card cat-${cat.id} ${n.done?'done':''}" data-id="${n.id}">
+      <button class="fam-check ${n.done?'on':''}" data-act="check" aria-label="completar"></button>
+      <div class="fam-body">
+        <div class="fam-head">
+          <span class="fam-emoji">${cat.emoji}</span>
+          <div class="fam-cat-label">${cat.tipo}</div>
+          <div class="fam-hour">${n.time?n.time:(n.done?'✓':'—')}</div>
+        </div>
+        <div class="fam-title">${escapeHTML(n.title||'(sin título)')}</div>
+        ${n.text?`<div class="fam-text">${escapeHTML(n.text)}</div>`:''}
+        ${lines.join('')}
+        ${lateHTML}
+        ${alertHTML}
+        <div class="fam-actions">
+          <button data-act="move">📅 Cambiar día</button>
+          <button data-act="edit">✎ Editar</button>
+          <button data-act="more">⋯ Más</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function wireFamCards(container){
+  container.querySelectorAll('.fam-card').forEach(card=>{
+    const id=card.dataset.id;
+    card.querySelectorAll('[data-act]').forEach(btn=>{
+      btn.onclick=(e)=>{
+        e.stopPropagation();
+        const act=btn.dataset.act;
+        if(act==='check') toggleDone(id);
+        else if(act==='move') openMoveMenu(id);
+        else if(act==='edit') openEditor(id);
+        else if(act==='more') openNoteMenu(id);
+      };
+    });
+    let pressT;
+    card.addEventListener('touchstart',()=>{
+      pressT=setTimeout(()=>{navigator.vibrate&&navigator.vibrate(15);openMoveMenu(id);},600);
+    },{passive:true});
+    card.addEventListener('touchend',()=>clearTimeout(pressT));
+    card.addEventListener('touchmove',()=>clearTimeout(pressT));
+  });
+}
+
+/* ---------- Wire tarjetas trabajo ---------- */
 function wireCards(container){
   container.querySelectorAll('.card').forEach(card=>{
     const id=card.dataset.id;
@@ -614,35 +903,44 @@ function wireCards(container){
   });
 }
 
+/* ---------- Listas auxiliares ---------- */
 function renderAllNotes(main){
   const list=[...notes()].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
   if(!list.length){main.innerHTML=`<div class="empty"><b>Sin notas</b>Empieza con el botón +</div>`;return;}
+  const esFam=state.currentNotebook==='familiar';
   let last='',html='';
   list.forEach(n=>{
     if(n.date!==last){last=n.date;html+=`<div class="section-label">${fmtLong(n.date)} · ${fmtShort(n.date)}</div>`;}
-    html+=cardHTML(n);
+    html+= esFam?famCardHTML(n):cardHTML(n);
   });
-  main.innerHTML=html;wireCards(main);
+  main.innerHTML=html;
+  esFam?wireFamCards(main):wireCards(main);
 }
 function renderImportantes(main){
   const list=notes().filter(n=>n.important).sort((a,b)=>a.date.localeCompare(b.date));
+  const esFam=state.currentNotebook==='familiar';
   if(!list.length){main.innerHTML=`<div class="empty"><b>Sin importantes</b>Marca con ⭐ lo que no quieras perder.</div>`;return;}
-  main.innerHTML=list.map(n=>cardHTML(n)).join('');wireCards(main);
+  main.innerHTML=list.map(n=>esFam?famCardHTML(n):cardHTML(n)).join('');
+  esFam?wireFamCards(main):wireCards(main);
 }
 function renderPendientes(main){
   const t=todayISO();
+  const esFam=state.currentNotebook==='familiar';
   const pend=notes().filter(n=>!n.done);
   const late=pend.filter(n=>n.date<t).sort((a,b)=>a.date.localeCompare(b.date));
   const today=pend.filter(n=>n.date===t);
   const future=pend.filter(n=>n.date>t).sort((a,b)=>a.date.localeCompare(b.date));
+  const render=(arr)=>arr.map(n=>esFam?famCardHTML(n):cardHTML(n)).join('');
   let html='';
-  if(late.length)html+=`<div class="section-label">⚠︎ Atrasadas</div>`+late.map(n=>cardHTML(n)).join('');
-  if(today.length)html+=`<div class="section-label">📌 Hoy</div>`+today.map(n=>cardHTML(n)).join('');
-  if(future.length)html+=`<div class="section-label">Próximas</div>`+future.map(n=>cardHTML(n)).join('');
+  if(late.length)html+=`<div class="section-label">⚠︎ Atrasadas</div>`+render(late);
+  if(today.length)html+=`<div class="section-label">📌 Hoy</div>`+render(today);
+  if(future.length)html+=`<div class="section-label">Próximas</div>`+render(future);
   if(!html)html=`<div class="empty"><b>Todo hecho</b>No tienes pendientes.</div>`;
-  main.innerHTML=html;wireCards(main);
+  main.innerHTML=html;
+  esFam?wireFamCards(main):wireCards(main);
 }
 function renderBuscar(main){
+  const esFam=state.currentNotebook==='familiar';
   main.innerHTML=`
     <div class="searchbox"><input id="q" type="text" placeholder="Buscar…" value="${escapeAttr(searchQuery)}" autocomplete="off"></div>
     <div id="results" style="padding:0 14px"></div>`;
@@ -655,11 +953,12 @@ function renderBuscar(main){
       (n.title||'').toLowerCase().includes(searchQuery)||
       (n.text||'').toLowerCase().includes(searchQuery)||
       (n.category||'').toLowerCase().includes(searchQuery)||
-      (n.place||'').toLowerCase().includes(searchQuery)
+      (n.place||'').toLowerCase().includes(searchQuery)||
+      (n.dose||'').toLowerCase().includes(searchQuery)
     ).sort((a,b)=>b.date.localeCompare(a.date));
     if(!found.length){results.innerHTML=`<div class="empty">Sin resultados.</div>`;return;}
-    results.innerHTML=found.map(n=>cardHTML(n)).join('');
-    wireCards(results);
+    results.innerHTML=found.map(n=>esFam?famCardHTML(n):cardHTML(n)).join('');
+    esFam?wireFamCards(results):wireCards(results);
   };
   q.addEventListener('input',run);
   run();
@@ -727,26 +1026,34 @@ function closeSheet(){document.getElementById('sheetBg').classList.remove('open'
 /* ---------- Editor ---------- */
 function openEditor(id,defaultDate){
   const editing=id?notes().find(n=>n.id===id):null;
-  const note=editing||{title:'',text:'',date:defaultDate||todayISO(),time:'',priority:'',category:'',place:'',alert:'',important:false,repeat:''};
+  const note=editing||{title:'',text:'',date:defaultDate||todayISO(),time:'',priority:'',category:'',place:'',alert:'',dose:'',important:false,repeat:''};
   const esFam=state.currentNotebook==='familiar';
-  const catChips = esFam ? `
-    <div class="label">Tipo de anotación</div>
-    <div class="chiprow" id="famCatRow">
-      ${CATEGORIAS_FAMILIA.map(c=>`<div class="chip ${note.category===c.id?'on':''}" data-c="${c.id}">${c.emoji} ${c.label}</div>`).join('')}
-    </div>` : '';
 
-  openSheet(`
-    <h3>${editing?'Editar anotación':'Nueva anotación'} ${esFam?'🏠':'📘'}</h3>
-    <input type="text" id="f_title" placeholder="Título" value="${escapeAttr(note.title)}" autocomplete="off">
-    <textarea id="f_text" placeholder="Escribe aquí… (opcional)">${escapeHTML(note.text)}</textarea>
-    <div class="row">
-      <input type="date" id="f_date" value="${note.date}">
-      <input type="time" id="f_time" value="${note.time||''}">
-    </div>
-    ${catChips}
-    ${esFam?`
+  if(esFam){
+    openSheet(`
+      <h3>${editing?'Editar recordatorio':'Nuevo recordatorio'} 🏠</h3>
+      <div class="label">Tipo</div>
+      <div class="cat-grid" id="famCatRow">
+        ${CATEGORIAS_FAMILIA.map(c=>`<button type="button" class="cat-btn ${note.category===c.id?'on':''}" data-c="${c.id}"><span class="em">${c.emoji}</span> ${c.label}</button>`).join('')}
+      </div>
+      <div class="row">
+        <div style="flex:1">
+          <div class="label">Hora</div>
+          <input type="time" id="f_time" value="${note.time||''}">
+        </div>
+        <div style="flex:1">
+          <div class="label">Fecha</div>
+          <input type="date" id="f_date" value="${note.date}">
+        </div>
+      </div>
+      <div class="label">Título</div>
+      <input type="text" id="f_title" placeholder="Ej: Tomar pastilla de la tensión" value="${escapeAttr(note.title)}" autocomplete="off">
+      <div class="label">Detalle (opcional)</div>
+      <textarea id="f_text" placeholder="Ej: 1 comprimido con agua durante el desayuno">${escapeHTML(note.text)}</textarea>
+      <div class="label">Dosis (opcional)</div>
+      <input type="text" id="f_dose" placeholder="Ej: 1 comprimido, 2 pastillas…" value="${escapeAttr(note.dose)}" autocomplete="off">
       <div class="label">Lugar (opcional)</div>
-      <input type="text" id="f_place" placeholder="En casa, Centro de Salud…" value="${escapeAttr(note.place)}" autocomplete="off">
+      <input type="text" id="f_place" placeholder="Ej: En casa, Centro de Salud…" value="${escapeAttr(note.place)}" autocomplete="off">
       <div class="label">Aviso recordatorio</div>
       <div class="chiprow" id="alertRow">
         <div class="chip ${note.alert===''?'on':''}" data-a="">Sin aviso</div>
@@ -754,7 +1061,72 @@ function openEditor(id,defaultDate){
         <div class="chip ${note.alert==='30 min antes'?'on':''}" data-a="30 min antes">30 min antes</div>
         <div class="chip ${note.alert==='1 hora antes'?'on':''}" data-a="1 hora antes">1 hora antes</div>
       </div>
-    `:''}
+      <div class="chiprow" style="margin-top:4px">
+        <div class="chip ${note.important?'on':''}" id="impChip">⭐ Importante</div>
+      </div>
+      <div class="actions">
+        ${editing?`<button class="btn-ghost" id="bDel">Eliminar</button>`:''}
+        <button class="btn-primary" id="bSave">Guardar</button>
+      </div>
+    `);
+    const sheet=document.getElementById('sheet');
+    const titleEl=sheet.querySelector('#f_title');
+    setTimeout(()=>titleEl.focus(),150);
+
+    let category=note.category||'';
+    let alert=note.alert||'';
+    let important=!!note.important;
+
+    sheet.querySelectorAll('#famCatRow .cat-btn').forEach(b=>b.onclick=()=>{
+      const val=b.dataset.c;
+      if(category===val){category='';b.classList.remove('on');}
+      else{category=val;sheet.querySelectorAll('#famCatRow .cat-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
+    });
+    sheet.querySelectorAll('#alertRow .chip').forEach(c=>c.onclick=()=>{
+      alert=c.dataset.a;
+      sheet.querySelectorAll('#alertRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');
+    });
+    sheet.querySelector('#impChip').onclick=()=>{
+      important=!important;
+      sheet.querySelector('#impChip').classList.toggle('on',important);
+    };
+    sheet.querySelector('#bSave').onclick=()=>{
+      const data={
+        title:sheet.querySelector('#f_title').value.trim(),
+        text:sheet.querySelector('#f_text').value.trim(),
+        date:sheet.querySelector('#f_date').value||todayISO(),
+        time:sheet.querySelector('#f_time').value||'',
+        category, alert, important,
+        place:sheet.querySelector('#f_place').value.trim(),
+        dose:sheet.querySelector('#f_dose').value.trim(),
+        priority:'', repeat:''
+      };
+      if(!data.title&&!data.text){data.title=data.text;}
+      if(!data.title&&!data.text){toast('Escribe algo');return;}
+      if(editing){updateNote(id,data);toast('✓ Guardado');}
+      else{addNote(data);toast('✓ Añadido');}
+      closeSheet();
+    };
+    if(editing){
+      sheet.querySelector('#bDel').onclick=()=>{
+        if(confirm('¿Eliminar este recordatorio?')){deleteNote(id);closeSheet();toast('Eliminado');}
+      };
+    }
+    titleEl.addEventListener('keydown',(e)=>{
+      if(e.key==='Enter'){e.preventDefault();sheet.querySelector('#bSave').click();}
+    });
+    return;
+  }
+
+  // --- Editor trabajo (sin cambios) ---
+  openSheet(`
+    <h3>${editing?'Editar anotación':'Nueva anotación'}</h3>
+    <input type="text" id="f_title" placeholder="Título" value="${escapeAttr(note.title)}" autocomplete="off">
+    <textarea id="f_text" placeholder="Escribe aquí… (opcional)">${escapeHTML(note.text)}</textarea>
+    <div class="row">
+      <input type="date" id="f_date" value="${note.date}">
+      <input type="time" id="f_time" value="${note.time||''}">
+    </div>
     <div class="label">Prioridad</div>
     <div class="chiprow" id="prioRow">
       <div class="chip ${note.priority===''?'on':''}" data-p="">—</div>
@@ -762,10 +1134,8 @@ function openEditor(id,defaultDate){
       <div class="chip ${note.priority==='med'?'on':''}" data-p="med">Media</div>
       <div class="chip ${note.priority==='high'?'on':''}" data-p="high">Alta</div>
     </div>
-    ${!esFam?`
-      <div class="label">Categoría (opcional)</div>
-      <input type="text" id="f_cat" placeholder="ej: llamadas, personas…" value="${escapeAttr(note.category)}" autocomplete="off">
-    `:''}
+    <div class="label">Categoría (opcional)</div>
+    <input type="text" id="f_cat" placeholder="ej: llamadas, personas…" value="${escapeAttr(note.category)}" autocomplete="off">
     <div class="label">Repetir</div>
     <div class="chiprow" id="repRow">
       <div class="chip ${note.repeat===''?'on':''}" data-r="">No</div>
@@ -784,10 +1154,7 @@ function openEditor(id,defaultDate){
   const sheet=document.getElementById('sheet');
   const titleEl=sheet.querySelector('#f_title');
   setTimeout(()=>titleEl.focus(),150);
-
   let priority=note.priority||'', repeat=note.repeat||'', important=!!note.important;
-  let category=note.category||'', alert=note.alert||'';
-
   sheet.querySelectorAll('#prioRow .chip').forEach(c=>c.onclick=()=>{
     priority=c.dataset.p;
     sheet.querySelectorAll('#prioRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');
@@ -796,31 +1163,19 @@ function openEditor(id,defaultDate){
     repeat=c.dataset.r;
     sheet.querySelectorAll('#repRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');
   });
-  if(esFam){
-    sheet.querySelectorAll('#famCatRow .chip').forEach(c=>c.onclick=()=>{
-      const val=c.dataset.c;
-      if(category===val){category='';c.classList.remove('on');}
-      else{category=val;sheet.querySelectorAll('#famCatRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');}
-    });
-    sheet.querySelectorAll('#alertRow .chip').forEach(c=>c.onclick=()=>{
-      alert=c.dataset.a;
-      sheet.querySelectorAll('#alertRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');
-    });
-  }
   sheet.querySelector('#impChip').onclick=()=>{
     important=!important;
     sheet.querySelector('#impChip').classList.toggle('on',important);
   };
-
   sheet.querySelector('#bSave').onclick=()=>{
     const data={
       title:sheet.querySelector('#f_title').value.trim(),
       text:sheet.querySelector('#f_text').value.trim(),
       date:sheet.querySelector('#f_date').value||todayISO(),
       time:sheet.querySelector('#f_time').value||'',
-      priority, category, important, repeat,
-      place:esFam?(sheet.querySelector('#f_place')?.value.trim()||''):'',
-      alert:esFam?alert:''
+      priority, category:sheet.querySelector('#f_cat').value.trim(),
+      important, repeat,
+      place:note.place||'', alert:note.alert||'', dose:note.dose||''
     };
     if(!data.title&&!data.text){data.title=data.text;data.text='';}
     if(!data.title&&!data.text){toast('Escribe algo');return;}
@@ -858,8 +1213,7 @@ function openNoteMenu(id){
     if(a==='edit'){closeSheet();setTimeout(()=>openEditor(id),50);}
     else if(a==='move'){openMoveMenu(id);}
     else if(a==='check'){toggleDone(id);closeSheet();}
-    else if(a==='buttonstar'){toggleImportant(id);close>
-Sheet();}
+    else if(a==='star'){toggleImportant(id);closeSheet();}
     else if(a==='dup'){duplicateNote(id);closeSheet();}
     else if(a==='del'){if(confirm('¿Eliminar esta anotación?')){deleteNote(id);closeSheet();toast('Eliminada');}}
   });
@@ -878,7 +1232,8 @@ function openMoveMenu(id){
     <input type="date" id="m_date" value="${n.date}">
     <div class="actions">
       <button class="btn-ghost" id="bClose">Cancelar</button>
-      <button class="btn-primary" id="bDate">Mover</    </div>
+      <button class="btn-primary" id="bDate">Mover</button>
+    </div>
   `);
   const sheet=document.getElementById('sheet');
   sheet.querySelector('#bClose').onclick=closeSheet;
@@ -900,6 +1255,11 @@ function openSettings(){
       <div class="chip ${state.currentNotebook==='trabajo'?'on':''}" data-nb="trabajo">📘 Trabajo</div>
       <div class="chip ${state.currentNotebook==='familiar'?'on':''}" data-nb="familiar">🏠 Familia</div>
     </div>
+    <div class="label">Nombre para el saludo familiar</div>
+    <input type="text" id="famNameInput" placeholder="Ej: mamá, papá, Carmen, abuelo…" value="${escapeAttr(state.famName)}" autocomplete="off">
+    <small style="display:block;color:var(--ink-soft);font-size:12px;margin:-6px 4px 8px">
+      Se usará en el saludo: "Buenos días, mamá". Déjalo vacío si prefieres solo "Buenos días".
+    </small>
     <div class="label">Apariencia</div>
     <div class="opt" id="optTheme">
       <div>Modo oscuro<small>Cambia el aspecto del cuaderno</small></div>
@@ -924,8 +1284,12 @@ function openSettings(){
   const sheet=document.getElementById('sheet');
   sheet.querySelector('#bClose').onclick=closeSheet;
   sheet.querySelectorAll('#setNbRow .chip').forEach(c=>c.onclick=()=>{
-    switchNotebook(c.dataset.nb);
-    closeSheet();
+    switchNotebook(c.dataset.nb);closeSheet();
+  });
+  const nameInput=sheet.querySelector('#famNameInput');
+  nameInput.addEventListener('input',()=>{
+    state.famName=nameInput.value.trim();
+    localStorage.setItem(NAME_KEY,state.famName);
   });
   sheet.querySelector('#optTheme').onclick=()=>{toggleTheme();openSettings();};
   sheet.querySelector('#optExport').onclick=exportBackup;
@@ -944,9 +1308,10 @@ function openSettings(){
 function exportBackup(){
   const data={
     app:'cuaderno',
-    version:2,
+    version:3,
     exportedAt:new Date().toISOString(),
-    notebooks:state.notebooks
+    notebooks:state.notebooks,
+    famName:state.famName
   };
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
@@ -971,12 +1336,8 @@ function importBackup(){
         if(parsed.notebooks){
           trabajo=Array.isArray(parsed.notebooks.trabajo?.notes)?parsed.notebooks.trabajo.notes:[];
           familiar=Array.isArray(parsed.notebooks.familiar?.notes)?parsed.notebooks.familiar.notes:[];
-        } else if(Array.isArray(parsed.notes)){
-          // Compatibilidad con la versión anterior (todo va a trabajo)
-          trabajo=parsed.notes;
-        } else if(Array.isArray(parsed)){
-          trabajo=parsed;
-        }
+        } else if(Array.isArray(parsed.notes)){trabajo=parsed.notes;}
+        else if(Array.isArray(parsed)){trabajo=parsed;}
         const clean=(arr)=>arr.filter(n=>n&&typeof n==='object'&&typeof n.date==='string')
           .map(n=>({
             id:n.id||uid(),
@@ -984,7 +1345,7 @@ function importBackup(){
             text:n.text||'',
             date:n.date,time:n.time||'',
             priority:n.priority||'',category:n.category||'',
-            place:n.place||'',alert:n.alert||'',
+            place:n.place||'',alert:n.alert||'',dose:n.dose||'',
             important:!!n.important,done:!!n.done,
             repeat:n.repeat||'',createdAt:n.createdAt||Date.now()
           }));
@@ -992,6 +1353,7 @@ function importBackup(){
         if(!confirm(`Se importarán ${t.length+fam.length} anotaciones (${t.length} trabajo, ${fam.length} familia) y se reemplazarán las actuales. ¿Continuar?`))return;
         state.notebooks.trabajo.notes=t;
         state.notebooks.familiar.notes=fam;
+        if(parsed.famName){state.famName=String(parsed.famName);localStorage.setItem(NAME_KEY,state.famName);}
         save();closeSheet();render();toast('Importado');
       }catch(err){alert('No se pudo leer el archivo: '+err.message);}
     };
