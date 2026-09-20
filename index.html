@@ -48,7 +48,6 @@
   #app{max-width:640px;margin:0 auto;min-height:100vh;background:var(--paper);
     display:flex;flex-direction:column;position:relative}
 
-  /* ---------- Selector de cuaderno ---------- */
   .notebooks{
     display:flex;gap:8px;padding:10px 14px 8px;
     background:var(--paper);border-bottom:1px solid var(--paper-line);
@@ -67,7 +66,6 @@
   }
   .nb-btn .em{font-size:18px;line-height:1}
 
-  /* ---------- Header ---------- */
   header{background:var(--paper);border-bottom:1px solid var(--paper-line);padding:10px 14px 8px;
     position:sticky;top:0;z-index:20}
   .toprow{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -107,7 +105,31 @@
     padding:6px 10px;border-radius:10px;cursor:pointer;
   }
 
-  /* ---------- Main ---------- */
+  /* ---------- Franja de aviso médico ---------- */
+  .med-banner{
+    background:linear-gradient(135deg,#e6f0fb,#d6e6f8);
+    border:1px solid #b8d4ee;
+    border-radius:14px;
+    padding:12px 14px;
+    margin:10px 0 0;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  [data-theme="dark"] .med-banner{background:linear-gradient(135deg,#1e2a38,#243448);border-color:#3a5470}
+  .med-banner .line{
+    display:flex;align-items:center;gap:10px;
+    font-size:17px;font-weight:600;color:#1e4a75;
+  }
+  [data-theme="dark"] .med-banner .line{color:#b8d4ee}
+  .med-banner .line .em{font-size:22px}
+  .med-banner .line .time{
+    margin-left:auto;font-weight:800;font-size:19px;letter-spacing:-.3px;
+  }
+  .med-banner .headline{
+    font-size:12px;letter-spacing:1.2px;text-transform:uppercase;
+    color:#1e4a75;font-weight:800;margin-bottom:2px;opacity:.75;
+  }
+  [data-theme="dark"] .med-banner .headline{color:#b8d4ee}
+
   main{flex:1;padding:12px 14px 140px}
   main.fam{padding:14px 14px 160px}
   .section-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;
@@ -116,7 +138,6 @@
   .empty b{color:var(--ink);display:block;font-size:16px;margin-bottom:6px}
   main.fam .empty{font-size:17px;padding:60px 24px}
 
-  /* ---------- Tarjeta trabajo ---------- */
   .card{background:var(--paper);border:1px solid var(--paper-line);
     border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;
     box-shadow:var(--shadow);display:flex;gap:10px;align-items:flex-start;
@@ -150,7 +171,7 @@
   .card .more{background:transparent;border:none;font-size:18px;cursor:pointer;
     color:var(--ink-soft);padding:0 4px}
 
-  /* ---------- Tarjeta familiar (grande y clara) ---------- */
+  /* ---------- Tarjeta familiar ---------- */
   .fam-card{
     background:var(--paper);
     border:1.5px solid var(--paper-line);
@@ -224,10 +245,7 @@
   }
   .fam-actions button:active{background:var(--paper-line)}
 
-  /* ---------- Resumen familiar ---------- */
-  .fam-summary{
-    display:flex;gap:8px;margin:4px 0 14px;
-  }
+  .fam-summary{display:flex;gap:8px;margin:4px 0 14px}
   .fam-summary .box{
     flex:1;background:var(--bg);border:1px solid var(--paper-line);
     border-radius:14px;padding:12px 10px;text-align:center;
@@ -236,7 +254,6 @@
   .fam-summary .lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;
     color:var(--ink-soft);font-weight:700;margin-top:4px}
 
-  /* ---------- Secciones desplegables (familiar) ---------- */
   .fam-fold{
     background:var(--bg);border:1px solid var(--paper-line);border-radius:14px;
     margin-bottom:14px;overflow:hidden;
@@ -259,7 +276,6 @@
   .fam-fold>summary .badge.ok{background:var(--done)}
   .fam-fold-body{padding:0 10px 10px}
 
-  /* ---------- FAB ---------- */
   .fab{position:fixed;right:calc(50% - 320px + 20px);bottom:calc(30px + env(safe-area-inset-bottom));
     width:58px;height:58px;border-radius:50%;background:var(--accent);color:#fff;
     border:none;font-size:30px;line-height:1;box-shadow:0 6px 18px rgba(180,70,30,.35);
@@ -268,7 +284,6 @@
   .fab:active{transform:scale(.94)}
   body[data-notebook="familiar"] .fab{width:70px;height:70px;font-size:36px;bottom:calc(36px + env(safe-area-inset-bottom))}
 
-  /* ---------- Tabs ---------- */
   nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--paper);
     border-top:1px solid var(--paper-line);display:flex;justify-content:space-around;
     align-items:center;padding:6px 0 calc(6px + env(safe-area-inset-bottom));
@@ -281,7 +296,6 @@
   body[data-notebook="familiar"] nav.tabs button{font-size:11.5px}
   body[data-notebook="familiar"] nav.tabs button .ico{font-size:22px}
 
-  /* ---------- Sheet ---------- */
   .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:40;
     display:none;align-items:flex-end;justify-content:center}
   .sheet-bg.open{display:flex}
@@ -334,11 +348,18 @@
   .moveopt:active{background:var(--paper-line)}
   body[data-notebook="familiar"] .moveopt{font-size:17px;padding:18px 14px}
 
-  /* ---------- Calendario ---------- */
   .cal{padding:8px 12px 110px}
   .cal-head{display:flex;align-items:center;justify-content:space-between;padding:8px 6px 12px}
   .cal-head button{background:transparent;border:none;font-size:20px;padding:6px 12px;cursor:pointer;color:var(--ink)}
   .cal-head .mtitle{font-size:16px;font-weight:600;text-transform:capitalize}
+  .cal-med-info{
+    background:#e6f0fb;border:1px solid #b8d4ee;border-radius:12px;
+    padding:10px 14px;margin:0 6px 14px;
+    font-size:14px;font-weight:700;color:#1e4a75;
+    display:flex;align-items:center;gap:8px;cursor:pointer;
+  }
+  [data-theme="dark"] .cal-med-info{background:#1e2a38;border-color:#3a5470;color:#b8d4ee}
+  .cal-med-info .em{font-size:18px}
   .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
   .cal-grid .wd{font-size:11px;text-align:center;color:var(--ink-soft);padding:4px 0;font-weight:600}
   .cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -347,10 +368,12 @@
   .cal-cell.muted{color:var(--ink-soft);opacity:.35}
   .cal-cell.today{background:var(--accent-soft);font-weight:700}
   .cal-cell.selected{border-color:var(--accent);font-weight:700}
-  .cal-cell .dots{display:flex;gap:2px;margin-top:3px;position:absolute;bottom:6px}
-  .cal-cell .dot{width:4px;height:4px;border-radius:50%;background:var(--accent)}
+  .cal-cell .dots{display:flex;gap:2px;margin-top:3px;position:absolute;bottom:6px;flex-wrap:wrap;justify-content:center;max-width:80%}
+  .cal-cell .dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
   .cal-cell .dot.imp{background:var(--important)}
   .cal-cell .dot.done{background:var(--done)}
+  .cal-cell .dot.med{background:#3a7ab8}
+  .cal-cell .dot.pill{background:#e07a7a}
   body[data-notebook="familiar"] .cal-cell{font-size:17px}
   body[data-notebook="familiar"] .cal-head .mtitle{font-size:19px}
 
@@ -401,10 +424,10 @@
 
 <script>
 /* =========================================================
-   CUADERNO PERSONAL — Trabajo + Familia (v3)
+   CUADERNO PERSONAL — Trabajo + Familia (v4)
    ========================================================= */
 
-const STORE_KEY='cuaderno.v2'; // ← MISMA CLAVE. Los datos actuales se conservan.
+const STORE_KEY='cuaderno.v2';
 const THEME_KEY='cuaderno.theme';
 const NOTEBOOK_KEY='cuaderno.notebook';
 const NAME_KEY='cuaderno.famName';
@@ -434,7 +457,6 @@ let currentTab='hoy';
 let calMonth=new Date();
 let searchQuery='';
 
-/* ---------- Fechas ---------- */
 function todayISO(){return toISO(new Date());}
 function toISO(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
 function parseISO(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
@@ -457,7 +479,6 @@ function greeting(){
   return state.famName ? `${g}, ${state.famName}` : g;
 }
 
-/* ---------- Persistencia ---------- */
 function load(){
   try{
     const raw=localStorage.getItem(STORE_KEY);
@@ -478,7 +499,6 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function notes(){return state.notebooks[state.currentNotebook].notes;}
 function setNotes(arr){state.notebooks[state.currentNotebook].notes=arr;}
 
-/* ---------- Tema ---------- */
 function applyTheme(){
   document.documentElement.setAttribute('data-theme', state.theme);
   document.body.setAttribute('data-notebook', state.currentNotebook);
@@ -487,7 +507,6 @@ function applyTheme(){
 }
 function toggleTheme(){state.theme=state.theme==='dark'?'light':'dark';localStorage.setItem(THEME_KEY,state.theme);applyTheme();render();}
 
-/* ---------- Toast ---------- */
 let toastT;
 function toast(msg){
   const t=document.getElementById('toast');
@@ -495,7 +514,6 @@ function toast(msg){
   clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1800);
 }
 
-/* ---------- Cambio de cuaderno ---------- */
 function switchNotebook(nb){
   if(nb!==state.currentNotebook){
     state.currentNotebook=nb;
@@ -509,31 +527,16 @@ function switchNotebook(nb){
   }
 }
 
-/* ---------- CRUD ---------- */
 function addNote(n){
   const note={
-    id:uid(),
-    title:n.title||'',
-    text:n.text||'',
-    date:n.date||todayISO(),
-    time:n.time||'',
-    priority:n.priority||'',
-    category:n.category||'',
-    place:n.place||'',
-    alert:n.alert||'',
-    dose:n.dose||'',
-    important:!!n.important,
-    done:false,
-    repeat:n.repeat||'',
-    createdAt:Date.now()
+    id:uid(),title:n.title||'',text:n.text||'',date:n.date||todayISO(),
+    time:n.time||'',priority:n.priority||'',category:n.category||'',
+    place:n.place||'',alert:n.alert||'',dose:n.dose||'',
+    important:!!n.important,done:false,repeat:n.repeat||'',createdAt:Date.now()
   };
-  notes().push(note);save();render();
-  return note;
+  notes().push(note);save();render();return note;
 }
-function updateNote(id,patch){
-  const n=notes().find(x=>x.id===id);if(!n)return;
-  Object.assign(n,patch);save();
-}
+function updateNote(id,patch){const n=notes().find(x=>x.id===id);if(!n)return;Object.assign(n,patch);save();}
 function deleteNote(id){setNotes(notes().filter(n=>n.id!==id));save();render();}
 function duplicateNote(id){
   const n=notes().find(x=>x.id===id);if(!n)return;
@@ -556,14 +559,8 @@ function nextRepeat(iso,type){
   if(type==='monthly'){d.setMonth(d.getMonth()+1);return toISO(d);}
   return null;
 }
-function moveNote(id,newDate){
-  const n=notes().find(x=>x.id===id);if(!n)return;
-  n.date=newDate;save();render();toast('Movida a '+fmtShort(newDate));
-}
-function toggleImportant(id){
-  const n=notes().find(x=>x.id===id);if(!n)return;
-  n.important=!n.important;save();render();
-}
+function moveNote(id,newDate){const n=notes().find(x=>x.id===id);if(!n)return;n.date=newDate;save();render();toast('Movida a '+fmtShort(newDate));}
+function toggleImportant(id){const n=notes().find(x=>x.id===id);if(!n)return;n.important=!n.important;save();render();}
 function notesForDate(iso){
   return notes().filter(n=>n.date===iso).sort((a,b)=>{
     if(a.done!==b.done)return a.done?1:-1;
@@ -578,6 +575,30 @@ function notesForDate(iso){
 function lateNotes(){const t=todayISO();return notes().filter(n=>!n.done&&n.date<t);}
 function catInfo(id){return CATEGORIAS_FAMILIA.find(c=>c.id===id)||CATEGORIAS_FAMILIA[CATEGORIAS_FAMILIA.length-1];}
 
+/* ---------- Avisos médicos del día ---------- */
+function medicalAlertsFor(iso){
+  const list=notesForDate(iso).filter(n=>!n.done && (n.category==='medico'||n.category==='medicacion'));
+  const meds=list.filter(n=>n.category==='medico').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  const pills=list.filter(n=>n.category==='medicacion').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  return {meds,pills};
+}
+function medicalAlertsHTML(iso){
+  const {meds,pills}=medicalAlertsFor(iso);
+  if(!meds.length && !pills.length) return '';
+  let lines='';
+  if(meds.length){
+    const times=meds.map(m=>m.time||'—').join(' · ');
+    const title=meds.length===1?meds[0].title:`${meds.length} citas médicas`;
+    lines+=`<div class="line"><span class="em">🩺</span> <span>${escapeHTML(title)}</span> <span class="time">${times}</span></div>`;
+  }
+  if(pills.length){
+    const times=pills.map(p=>p.time).filter(Boolean).join(' · ');
+    const title=pills.length===1?'Medicación':`${pills.length} tomas`;
+    lines+=`<div class="line"><span class="em">💊</span> <span>${escapeHTML(title)}</span> <span class="time">${times||'—'}</span></div>`;
+  }
+  return `<div class="med-banner"><div class="headline">Aviso de hoy</div>${lines}</div>`;
+}
+
 /* ---------- Render principal ---------- */
 function render(){
   applyTheme();
@@ -590,7 +611,6 @@ function render(){
   const main=document.getElementById('main');
   const tabs=document.getElementById('tabs');
   const fab=document.getElementById('fab');
-
   const esFam = state.currentNotebook==='familiar';
   main.classList.toggle('fam', esFam);
 
@@ -598,8 +618,8 @@ function render(){
     {id:'hoy',ico:'📅',label:'Hoy'},
     {id:'calendario',ico:'📆',label:'Calendario'},
     {id:'notas',ico:'📝',label:'Notas'},
-    {id:'importantes',ico:'⭐',label: esFam?'Importantes':'Importantes'},
-    {id:'pendientes',ico:'📌',label: esFam?'Pendientes':'Pendientes'},
+    {id:'importantes',ico:'⭐',label:'Importantes'},
+    {id:'pendientes',ico:'📌',label:'Pendientes'},
     {id:'buscar',ico:'🔎',label:'Buscar'},
   ];
   tabs.innerHTML=tabDefs.map(t=>
@@ -679,7 +699,6 @@ function render(){
 
 function isToday(iso){return iso===todayISO();}
 
-/* ---------- Header trabajo ---------- */
 function renderWorkHeader(header){
   header.innerHTML=`
     <div class="toprow">
@@ -703,13 +722,14 @@ function renderWorkHeader(header){
   header.querySelector('#settings').onclick=openSettings;
 }
 
-/* ---------- Header familiar (grande) ---------- */
 function renderFamHeader(header){
   const esHoy = isToday(currentDate);
+  const alertHTML = medicalAlertsHTML(currentDate);
   header.innerHTML=`
     <div class="fam-hello">${greeting()}</div>
     <div class="fam-date">${fmtLong(currentDate)} · ${parseISO(currentDate).getFullYear()}</div>
-    <div class="fam-daynav">
+    ${alertHTML}
+    <div class="fam-daynav" style="margin-top:12px">
       <button id="prev">‹</button>
       <div class="fam-day-label ${esHoy?'home':''}" id="goToday">${esHoy?'HOY':'Ir a HOY'}</div>
       <button id="next">›</button>
@@ -722,7 +742,6 @@ function renderFamHeader(header){
   header.querySelector('#settings').onclick=openSettings;
 }
 
-/* ---------- Render trabajo ---------- */
 function renderDay(main){
   const list=notesForDate(currentDate);
   if(!list.length){
@@ -760,7 +779,6 @@ function cardHTML(n){
     </div>`;
 }
 
-/* ---------- Render familiar (tarjetas grandes) ---------- */
 function renderFamDay(main){
   const t=todayISO();
   const all=notes();
@@ -786,7 +804,6 @@ function renderFamDay(main){
 
   let html = resumen;
 
-  // Atrasadas (colapsadas por defecto)
   if(lateAll.length){
     html+=`
       <details class="fam-fold" ${lateAll.length<=3?'open':''}>
@@ -795,17 +812,12 @@ function renderFamDay(main){
       </details>`;
   }
 
-  // Hoy con hora
   if(dayConHora.length){
     html += `<div class="section-label">🕒 Con hora</div>` + dayConHora.map(n=>famCardHTML(n)).join('');
   }
-
-  // Hoy sin hora
   if(daySinHora.length){
     html += `<div class="section-label">📌 Sin hora</div>` + daySinHora.map(n=>famCardHTML(n)).join('');
   }
-
-  // Hechas (colapsadas si hay más de 2)
   if(dayDone.length){
     html+=`
       <details class="fam-fold" ${dayDone.length<=2?'open':''}>
@@ -872,7 +884,6 @@ function wireFamCards(container){
   });
 }
 
-/* ---------- Wire tarjetas trabajo ---------- */
 function wireCards(container){
   container.querySelectorAll('.card').forEach(card=>{
     const id=card.dataset.id;
@@ -903,7 +914,6 @@ function wireCards(container){
   });
 }
 
-/* ---------- Listas auxiliares ---------- */
 function renderAllNotes(main){
   const list=[...notes()].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
   if(!list.length){main.innerHTML=`<div class="empty"><b>Sin notas</b>Empieza con el botón +</div>`;return;}
@@ -965,19 +975,36 @@ function renderBuscar(main){
   if(!searchQuery) setTimeout(()=>q.focus(),100);
 }
 
-/* ---------- Calendario ---------- */
+/* ---------- Calendario (con puntos médicos) ---------- */
+function countMedicalInMonth(y,m){
+  const prefix=`${y}-${String(m+1).padStart(2,'0')}-`;
+  const list=notes().filter(n=>n.date.startsWith(prefix)&&!n.done&&(n.category==='medico'||n.category==='medicacion'));
+  const meds=list.filter(n=>n.category==='medico').length;
+  const pills=list.filter(n=>n.category==='medicacion').length;
+  return {meds,pills,total:list.length};
+}
 function renderCalendar(main){
   const y=calMonth.getFullYear(),m=calMonth.getMonth();
   const first=new Date(y,m,1);
   const startWd=(first.getDay()+6)%7;
   const daysInMonth=new Date(y,m+1,0).getDate();
   const mn=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const esFam=state.currentNotebook==='familiar';
+  const {meds:medCount,pills:pillCount,total:medTotal}=countMedicalInMonth(y,m);
+
+  const medInfo = esFam && medTotal>0 ? `
+    <div class="cal-med-info" id="medInfo">
+      <span class="em">🩺</span>
+      Este mes: ${medCount} cita${medCount!==1?'s':''} médica${medCount!==1?'s':''} · ${pillCount} toma${pillCount!==1?'s':''} de medicación
+    </div>` : '';
+
   let html=`<div class="cal">
     <div class="cal-head">
       <button id="calPrev">‹</button>
       <div class="mtitle">${mn[m]} ${y}</div>
       <button id="calNext">›</button>
     </div>
+    ${medInfo}
     <div class="cal-grid">
       ${['L','M','X','J','V','S','D'].map(d=>`<div class="wd">${d}</div>`).join('')}`;
   const prevDays=new Date(y,m,0).getDate();
@@ -989,12 +1016,16 @@ function renderCalendar(main){
     const hasImp=list.some(n=>n.important&&!n.done);
     const hasPend=list.some(n=>!n.done);
     const allDone=list.length>0&&list.every(n=>n.done);
+    const hasMed=list.some(n=>!n.done&&n.category==='medico');
+    const hasPill=list.some(n=>!n.done&&n.category==='medicacion');
     let dots='';
     if(list.length){
       dots=`<div class="dots">
+        ${hasMed?'<div class="dot med"></div>':''}
+        ${hasPill?'<div class="dot pill"></div>':''}
         ${hasImp?'<div class="dot imp"></div>':''}
-        ${hasPend&&!hasImp?'<div class="dot"></div>':''}
-        ${allDone?'<div class="dot done"></div>':''}
+        ${hasPend&&!hasImp&&!hasMed&&!hasPill?'<div class="dot"></div>':''}
+        ${allDone&&!hasMed&&!hasPill?'<div class="dot done"></div>':''}
       </div>`;
     }
     const cls=['cal-cell'];
@@ -1012,6 +1043,24 @@ function renderCalendar(main){
   main.querySelectorAll('.cal-cell[data-date]').forEach(c=>{
     c.onclick=()=>{currentDate=c.dataset.date;currentTab='hoy';render();};
   });
+  const medInfoEl=main.querySelector('#medInfo');
+  if(medInfoEl){
+    medInfoEl.onclick=()=>{
+      currentTab='notas';
+      searchQuery='';
+      render();
+      // Filtra por categorías médicas
+      setTimeout(()=>{
+        const searchMain=document.getElementById('main');
+        const target=searchMain.querySelector('#results');
+        if(target){
+          const list=notes().filter(n=>!n.done&&(n.category==='medico'||n.category==='medicacion')).sort((a,b)=>a.date.localeCompare(b.date));
+          target.innerHTML= list.length? list.map(n=>famCardHTML(n)).join('') : `<div class="empty">Sin próximas citas.</div>`;
+          wireFamCards(target);
+        }
+      },50);
+    };
+  }
 }
 
 /* ---------- Sheet ---------- */
@@ -1023,7 +1072,6 @@ function openSheet(html){
 }
 function closeSheet(){document.getElementById('sheetBg').classList.remove('open');}
 
-/* ---------- Editor ---------- */
 function openEditor(id,defaultDate){
   const editing=id?notes().find(n=>n.id===id):null;
   const note=editing||{title:'',text:'',date:defaultDate||todayISO(),time:'',priority:'',category:'',place:'',alert:'',dose:'',important:false,repeat:''};
@@ -1037,14 +1085,8 @@ function openEditor(id,defaultDate){
         ${CATEGORIAS_FAMILIA.map(c=>`<button type="button" class="cat-btn ${note.category===c.id?'on':''}" data-c="${c.id}"><span class="em">${c.emoji}</span> ${c.label}</button>`).join('')}
       </div>
       <div class="row">
-        <div style="flex:1">
-          <div class="label">Hora</div>
-          <input type="time" id="f_time" value="${note.time||''}">
-        </div>
-        <div style="flex:1">
-          <div class="label">Fecha</div>
-          <input type="date" id="f_date" value="${note.date}">
-        </div>
+        <div style="flex:1"><div class="label">Hora</div><input type="time" id="f_time" value="${note.time||''}"></div>
+        <div style="flex:1"><div class="label">Fecha</div><input type="date" id="f_date" value="${note.date}"></div>
       </div>
       <div class="label">Título</div>
       <input type="text" id="f_title" placeholder="Ej: Tomar pastilla de la tensión" value="${escapeAttr(note.title)}" autocomplete="off">
@@ -1072,11 +1114,9 @@ function openEditor(id,defaultDate){
     const sheet=document.getElementById('sheet');
     const titleEl=sheet.querySelector('#f_title');
     setTimeout(()=>titleEl.focus(),150);
-
     let category=note.category||'';
     let alert=note.alert||'';
     let important=!!note.important;
-
     sheet.querySelectorAll('#famCatRow .cat-btn').forEach(b=>b.onclick=()=>{
       const val=b.dataset.c;
       if(category===val){category='';b.classList.remove('on');}
@@ -1118,7 +1158,7 @@ function openEditor(id,defaultDate){
     return;
   }
 
-  // --- Editor trabajo (sin cambios) ---
+  // Editor trabajo (sin cambios)
   openSheet(`
     <h3>${editing?'Editar anotación':'Nueva anotación'}</h3>
     <input type="text" id="f_title" placeholder="Título" value="${escapeAttr(note.title)}" autocomplete="off">
@@ -1193,7 +1233,6 @@ function openEditor(id,defaultDate){
   });
 }
 
-/* ---------- Menú tarjeta ---------- */
 function openNoteMenu(id){
   const n=notes().find(x=>x.id===id);if(!n)return;
   openSheet(`
@@ -1219,7 +1258,6 @@ function openNoteMenu(id){
   });
 }
 
-/* ---------- Mover a… ---------- */
 function openMoveMenu(id){
   const n=notes().find(x=>x.id===id);if(!n)return;
   openSheet(`
@@ -1237,16 +1275,13 @@ function openMoveMenu(id){
   `);
   const sheet=document.getElementById('sheet');
   sheet.querySelector('#bClose').onclick=closeSheet;
-  sheet.querySelectorAll('.moveopt').forEach(b=>b.onclick=()=>{
-    moveNote(id,b.dataset.d);closeSheet();
-  });
+  sheet.querySelectorAll('.moveopt').forEach(b=>b.onclick=()=>{moveNote(id,b.dataset.d);closeSheet();});
   sheet.querySelector('#bDate').onclick=()=>{
     const d=sheet.querySelector('#m_date').value;
     if(!d)return;moveNote(id,d);closeSheet();
   };
 }
 
-/* ---------- Ajustes ---------- */
 function openSettings(){
   openSheet(`
     <h3>Ajustes</h3>
@@ -1283,9 +1318,7 @@ function openSettings(){
   `);
   const sheet=document.getElementById('sheet');
   sheet.querySelector('#bClose').onclick=closeSheet;
-  sheet.querySelectorAll('#setNbRow .chip').forEach(c=>c.onclick=()=>{
-    switchNotebook(c.dataset.nb);closeSheet();
-  });
+  sheet.querySelectorAll('#setNbRow .chip').forEach(c=>c.onclick=()=>{switchNotebook(c.dataset.nb);closeSheet();});
   const nameInput=sheet.querySelector('#famNameInput');
   nameInput.addEventListener('input',()=>{
     state.famName=nameInput.value.trim();
@@ -1306,13 +1339,7 @@ function openSettings(){
 }
 
 function exportBackup(){
-  const data={
-    app:'cuaderno',
-    version:3,
-    exportedAt:new Date().toISOString(),
-    notebooks:state.notebooks,
-    famName:state.famName
-  };
+  const data={app:'cuaderno',version:4,exportedAt:new Date().toISOString(),notebooks:state.notebooks,famName:state.famName};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
@@ -1340,17 +1367,13 @@ function importBackup(){
         else if(Array.isArray(parsed)){trabajo=parsed;}
         const clean=(arr)=>arr.filter(n=>n&&typeof n==='object'&&typeof n.date==='string')
           .map(n=>({
-            id:n.id||uid(),
-            title:n.title||'',
-            text:n.text||'',
-            date:n.date,time:n.time||'',
-            priority:n.priority||'',category:n.category||'',
+            id:n.id||uid(),title:n.title||'',text:n.text||'',
+            date:n.date,time:n.time||'',priority:n.priority||'',category:n.category||'',
             place:n.place||'',alert:n.alert||'',dose:n.dose||'',
-            important:!!n.important,done:!!n.done,
-            repeat:n.repeat||'',createdAt:n.createdAt||Date.now()
+            important:!!n.important,done:!!n.done,repeat:n.repeat||'',createdAt:n.createdAt||Date.now()
           }));
         const t=clean(trabajo),fam=clean(familiar);
-        if(!confirm(`Se importarán ${t.length+fam.length} anotaciones (${t.length} trabajo, ${fam.length} familia) y se reemplazarán las actuales. ¿Continuar?`))return;
+        if(!confirm(`Se importarán ${t.length+fam.length} anotaciones (${t.length} trabajo, ${fam.length} familia). ¿Continuar?`))return;
         state.notebooks.trabajo.notes=t;
         state.notebooks.familiar.notes=fam;
         if(parsed.famName){state.famName=String(parsed.famName);localStorage.setItem(NAME_KEY,state.famName);}
@@ -1362,11 +1385,9 @@ function importBackup(){
   input.click();
 }
 
-/* ---------- Escape ---------- */
 function escapeHTML(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function escapeAttr(s){return escapeHTML(s);}
 
-/* ---------- Teclado ---------- */
 document.addEventListener('keydown',(e)=>{
   if(e.key==='Escape') closeSheet();
   if(e.target.matches('input,textarea,select'))return;
@@ -1375,7 +1396,6 @@ document.addEventListener('keydown',(e)=>{
   if(e.key==='n'||e.key==='N'){openEditor(null,currentTab==='hoy'?currentDate:todayISO());}
 });
 
-/* ---------- Arranque ---------- */
 applyTheme();
 load();
 render();
