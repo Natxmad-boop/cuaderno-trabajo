@@ -161,6 +161,13 @@
   .note-checklist li .cbox.on::after{content:"✓";color:#fff;font-size:12px;
     font-weight:700;position:absolute;left:3px;top:-2px}
   .note-checklist li.on span{text-decoration:line-through;color:var(--ink-faint)}
+  /* Editor de lista en el sheet */
+  .cl-edit-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .cl-edit-row input[type=text]{flex:1;margin-bottom:0}
+  .cl-edit-row .cl-del{background:transparent;border:1px solid var(--paper-line);
+    color:var(--ink-soft);width:38px;height:38px;border-radius:10px;
+    cursor:pointer;font-size:16px;flex:0 0 38px;display:flex;align-items:center;justify-content:center}
+  .cl-edit-row .cl-del:active{background:#fde2d4;color:#8a2d10;border-color:#e8b48a}
   .fab{position:fixed;right:calc(50% - 320px + 20px);
     bottom:calc(170px + env(safe-area-inset-bottom));
     background:var(--nb-accent);color:#fff;border:none;border-radius:28px;
@@ -1040,7 +1047,7 @@ function renderQuickChecklist(sheet,draft){
   const cl=extra.querySelector('#q_cl');
   const renderItems=function(){
     cl.innerHTML=draft.checklist.map(function(c,i){
-      return '<div class="row" style="margin-bottom:6px;align-items:center"><input type="text" data-idx="'+i+'" value="'+escapeAttr(c.text)+'" placeholder="Punto '+(i+1)+'"><button class="moveopt" data-del="'+i+'" style="flex:0 0 auto;width:auto;padding:8px 12px;margin:0">✕</button></div>';
+      return '<div class="cl-edit-row"><input type="text" data-idx="'+i+'" value="'+escapeAttr(c.text)+'" placeholder="Punto '+(i+1)+'"><button class="cl-del" data-del="'+i+'">✕</button></div>';
     }).join('');
     cl.querySelectorAll('input').forEach(function(inp){inp.addEventListener('input',function(e){draft.checklist[+inp.dataset.idx].text=e.target.value;});});
     cl.querySelectorAll('[data-del]').forEach(function(b){b.onclick=function(){draft.checklist.splice(+b.dataset.del,1);renderItems();};});
@@ -1109,7 +1116,10 @@ function openEditorFam(id,defaultDate){
 }
 function openEditorCuad(id){
   const n=notes().find(function(x){return x.id===id;});if(!n)return;
+  // Copia local de la checklist para editar sin tocar datos hasta guardar
+  const draftCl = (n.checklist||[]).map(function(c){return {text:c.text, done:!!c.done};});
   openSheet('<h3>Editar</h3>'+
+    '<div class="label">Texto</div>'+
     '<textarea id="e_text" class="'+(n.hand?'hand':'')+'">'+escapeHTML(n.text)+'</textarea>'+
     '<div class="label">Hora (opcional)</div><input type="time" id="e_time" value="'+(n.time||'')+'">'+
     '<div class="label">Fecha</div><input type="date" id="e_date" value="'+n.date+'">'+
@@ -1120,9 +1130,13 @@ function openEditorCuad(id){
       '<div class="chip personal '+(n.label==='personal'?'on':'')+'" data-v="personal">🟩 Personal</div>'+
     '</div>'+
     '<div class="chiprow"><div class="chip important '+(n.important?'on':'')+'" id="e_imp">⭐ Importante</div><div class="chip '+(n.hand?'on':'')+'" id="e_hand">✍️ Manuscrita</div></div>'+
+    '<div class="label">Lista (checklist)</div>'+
+    '<div id="e_cl"></div>'+
+    '<button class="moveopt" id="e_addItem" style="text-align:center;border-style:dashed">+ añadir punto</button>'+
     '<div class="actions"><button class="btn-ghost" id="eDel">Eliminar</button><button class="btn-primary" id="eSave">Guardar</button></div>');
   const sheet=document.getElementById('sheet');
   const ta=sheet.querySelector('#e_text');
+  const clWrap=sheet.querySelector('#e_cl');
   setTimeout(function(){ta.focus();},120);
   let label=n.label||'', important=!!n.important, hand=!!n.hand;
   sheet.querySelectorAll('#e_label .chip').forEach(function(c){
@@ -1130,13 +1144,36 @@ function openEditorCuad(id){
   });
   sheet.querySelector('#e_imp').onclick=function(){important=!important;sheet.querySelector('#e_imp').classList.toggle('on',important);};
   sheet.querySelector('#e_hand').onclick=function(){hand=!hand;sheet.querySelector('#e_hand').classList.toggle('on',hand);ta.classList.toggle('hand',hand);};
+  const renderCl=function(){
+    if(!draftCl.length){
+      clWrap.innerHTML='<div style="color:var(--ink-faint);font-size:13px;padding:6px 2px;margin-bottom:8px">Sin puntos. Toca "+ añadir punto" para crear uno.</div>';
+      return;
+    }
+    clWrap.innerHTML=draftCl.map(function(c,i){
+      return '<div class="cl-edit-row">'+
+        '<button type="button" class="cbox '+(c.done?'on':'')+'" data-toggle="'+i+'" style="flex:0 0 22px;width:22px;height:22px;border:2px solid var(--ink-soft);border-radius:5px;background:'+(c.done?'var(--done)':'transparent')+';cursor:pointer;position:relative;padding:0"></button>'+
+        '<input type="text" data-idx="'+i+'" value="'+escapeAttr(c.text)+'" placeholder="Punto '+(i+1)+'">'+
+        '<button class="cl-del" data-del="'+i+'">✕</button>'+
+      '</div>';
+    }).join('');
+    clWrap.querySelectorAll('input').forEach(function(inp){inp.addEventListener('input',function(e){draftCl[+inp.dataset.idx].text=e.target.value;});});
+    clWrap.querySelectorAll('[data-toggle]').forEach(function(b){b.onclick=function(){const i=+b.dataset.toggle;draftCl[i].done=!draftCl[i].done;renderCl();};});
+    clWrap.querySelectorAll('[data-del]').forEach(function(b){b.onclick=function(){draftCl.splice(+b.dataset.del,1);renderCl();};});
+  };
+  renderCl();
+  sheet.querySelector('#e_addItem').onclick=function(){
+    draftCl.push({text:'',done:false});renderCl();
+    setTimeout(function(){const inputs=clWrap.querySelectorAll('input');if(inputs[inputs.length-1])inputs[inputs.length-1].focus();},50);
+  };
   sheet.querySelector('#eDel').onclick=function(){if(confirm('¿Eliminar esta anotación?')){deleteNote(id);closeSheet();toast('Eliminada');}};
   sheet.querySelector('#eSave').onclick=function(){
+    const cleanedCl = draftCl.filter(function(c){return (c.text||'').trim().length>0;});
     updateNote(id,{
       text:ta.value.trim(),
       time:sheet.querySelector('#e_time').value||'',
       date:sheet.querySelector('#e_date').value||todayISO(),
-      label:label, important:important, hand:hand
+      label:label, important:important, hand:hand,
+      checklist:cleanedCl
     });
     toast('✓ Guardado');closeSheet();render();
   };
@@ -1232,7 +1269,7 @@ function openSettings(){
   };
 }
 function exportBackup(){
-  const data={app:'cuaderno',version:7,exportedAt:new Date().toISOString(),notebooks:state.notebooks,famName:state.famName,bgColors:state.bgColors};
+  const data={app:'cuaderno',version:8,exportedAt:new Date().toISOString(),notebooks:state.notebooks,famName:state.famName,bgColors:state.bgColors};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
