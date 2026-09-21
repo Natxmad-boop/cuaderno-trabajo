@@ -667,16 +667,16 @@ let calMonth=new Date();
 let searchQuery='';
 
 function todayISO(){return toISO(new Date());}
-function toISO(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`;}
-function parseISO(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d);}
+function toISO(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day;}
+function parseISO(s){const p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);}
 function addDays(iso,n){const d=parseISO(iso);d.setDate(d.getDate()+n);return toISO(d);}
 function fmtLong(iso){
   const d=parseISO(iso);
   const wd=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][d.getDay()];
   const mn=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][d.getMonth()];
-  return `${wd} ${d.getDate()} de ${mn}`;
+  return wd+' '+d.getDate()+' de '+mn;
 }
-function fmtShort(iso){const d=parseISO(iso);return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;}
+function fmtShort(iso){const d=parseISO(iso);return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();}
 function nextWeekday(target){const d=new Date();const cur=d.getDay()===0?7:d.getDay();let diff=(target-cur+7)%7;if(diff===0)diff=7;d.setDate(d.getDate()+diff);return toISO(d);}
 function greeting(){
   const h=new Date().getHours();
@@ -685,7 +685,7 @@ function greeting(){
   else if(h<13)g='Buenos días';
   else if(h<20)g='Buenas tardes';
   else g='Buenas noches';
-  return state.famName ? `${g}, ${state.famName}` : g;
+  return state.famName ? g+', '+state.famName : g;
 }
 function dayName(iso){const d=parseISO(iso);return ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][d.getDay()];}
 function monthNameUpper(iso){const d=parseISO(iso);return ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'][d.getMonth()];}
@@ -696,8 +696,8 @@ function load(){
     if(raw){
       const p=JSON.parse(raw);
       if(p && p.notebooks){
-        if(Array.isArray(p.notebooks.trabajo?.notes)) state.notebooks.trabajo.notes=p.notebooks.trabajo.notes.map(normalizeNote);
-        if(Array.isArray(p.notebooks.familiar?.notes)) state.notebooks.familiar.notes=p.notebooks.familiar.notes.map(normalizeNote);
+        if(Array.isArray(p.notebooks.trabajo && p.notebooks.trabajo.notes)) state.notebooks.trabajo.notes=p.notebooks.trabajo.notes.map(normalizeNote);
+        if(Array.isArray(p.notebooks.familiar && p.notebooks.familiar.notes)) state.notebooks.familiar.notes=p.notebooks.familiar.notes.map(normalizeNote);
       }
     }
   }catch(e){console.warn('load error',e);}
@@ -730,7 +730,7 @@ let toastT;
 function toast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
-  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1800);
+  clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},1800);
 }
 function switchNotebook(nb){
   if(nb!==state.currentNotebook){
@@ -742,22 +742,22 @@ function switchNotebook(nb){
   }
 }
 function addNote(n){
-  const note=normalizeNote({...n,id:uid(),createdAt:Date.now()});
+  const note=normalizeNote(Object.assign({},n,{id:uid(),createdAt:Date.now()}));
   notes().push(note);save();render();return note;
 }
-function updateNote(id,patch){const n=notes().find(x=>x.id===id);if(!n)return;Object.assign(n,patch);save();}
-function deleteNote(id){setNotes(notes().filter(n=>n.id!==id));save();render();}
+function updateNote(id,patch){const n=notes().find(function(x){return x.id===id;});if(!n)return;Object.assign(n,patch);save();}
+function deleteNote(id){setNotes(notes().filter(function(n){return n.id!==id;}));save();render();}
 function duplicateNote(id){
-  const n=notes().find(x=>x.id===id);if(!n)return;
-  const copy={...n,id:uid(),done:false,createdAt:Date.now(),checklist:n.checklist.map(c=>({...c,done:false}))};
+  const n=notes().find(function(x){return x.id===id;});if(!n)return;
+  const copy=Object.assign({},n,{id:uid(),done:false,createdAt:Date.now(),checklist:n.checklist.map(function(c){return Object.assign({},c,{done:false});})});
   notes().push(copy);save();render();toast('Duplicada');
 }
 function toggleDone(id){
-  const n=notes().find(x=>x.id===id);if(!n)return;
+  const n=notes().find(function(x){return x.id===id;});if(!n)return;
   n.done=!n.done;
   if(n.done && n.repeat){
     const next=nextRepeat(n.date,n.repeat);
-    if(next){notes().push({...n,id:uid(),done:false,date:next,createdAt:Date.now()});}
+    if(next){notes().push(Object.assign({},n,{id:uid(),done:false,date:next,createdAt:Date.now()}));}
   }
   save();render();
 }
@@ -769,49 +769,49 @@ function nextRepeat(iso,type){
   if(type==='yearly'){d.setFullYear(d.getFullYear()+1);return toISO(d);}
   return null;
 }
-function moveNote(id,newDate){const n=notes().find(x=>x.id===id);if(!n)return;n.date=newDate;save();render();toast('Movida al '+fmtShort(newDate));}
-function toggleImportant(id){const n=notes().find(x=>x.id===id);if(!n)return;n.important=!n.important;save();render();}
+function moveNote(id,newDate){const n=notes().find(function(x){return x.id===id;});if(!n)return;n.date=newDate;save();render();toast('Movida al '+fmtShort(newDate));}
+function toggleImportant(id){const n=notes().find(function(x){return x.id===id;});if(!n)return;n.important=!n.important;save();render();}
 function toggleCheckItem(noteId,idx){
-  const n=notes().find(x=>x.id===noteId);if(!n||!n.checklist[idx])return;
+  const n=notes().find(function(x){return x.id===noteId;});if(!n||!n.checklist[idx])return;
   n.checklist[idx].done=!n.checklist[idx].done;save();render();
 }
 function notesForDate(iso){
-  return notes().filter(n=>n.date===iso).sort((a,b)=>{
+  return notes().filter(function(n){return n.date===iso;}).sort(function(a,b){
     if(a.done!==b.done)return a.done?1:-1;
     if(a.time&&b.time)return a.time.localeCompare(b.time);
     if(a.time)return -1;if(b.time)return 1;
     return a.createdAt-b.createdAt;
   });
 }
-function lateNotes(){const t=todayISO();return notes().filter(n=>!n.done&&n.date<t);}
-function catInfo(id){return CATEGORIAS_FAMILIA.find(c=>c.id===id)||CATEGORIAS_FAMILIA[CATEGORIAS_FAMILIA.length-1];}
+function lateNotes(){const t=todayISO();return notes().filter(function(n){return !n.done&&n.date<t;});}
+function catInfo(id){return CATEGORIAS_FAMILIA.find(function(c){return c.id===id;})||CATEGORIAS_FAMILIA[CATEGORIAS_FAMILIA.length-1];}
 function medicalAlertsFor(iso){
-  const list=notesForDate(iso).filter(n=>!n.done && (n.category==='medico'||n.category==='medicacion'));
-  const meds=list.filter(n=>n.category==='medico').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
-  const pills=list.filter(n=>n.category==='medicacion').sort((a,b)=>(a.time||'').localeCompare(b.time||''));
-  return {meds,pills};
+  const list=notesForDate(iso).filter(function(n){return !n.done && (n.category==='medico'||n.category==='medicacion');});
+  const meds=list.filter(function(n){return n.category==='medico';}).sort(function(a,b){return (a.time||'').localeCompare(b.time||'');});
+  const pills=list.filter(function(n){return n.category==='medicacion';}).sort(function(a,b){return (a.time||'').localeCompare(b.time||'');});
+  return {meds:meds,pills:pills};
 }
 function medicalAlertsHTML(iso){
-  const {meds,pills}=medicalAlertsFor(iso);
-  if(!meds.length && !pills.length) return '';
+  const a=medicalAlertsFor(iso);
+  if(!a.meds.length && !a.pills.length) return '';
   let lines='';
-  if(meds.length){
-    const times=meds.map(m=>m.time||'—').join(' · ');
-    const title=meds.length===1?meds[0].title:`${meds.length} citas médicas`;
-    lines+=`<div class="line"><span class="em">🩺</span> <span>${escapeHTML(title)}</span> <span class="time">${times}</span></div>`;
+  if(a.meds.length){
+    const times=a.meds.map(function(m){return m.time||'—';}).join(' · ');
+    const title=a.meds.length===1?a.meds[0].title:a.meds.length+' citas médicas';
+    lines+='<div class="line"><span class="em">🩺</span> <span>'+escapeHTML(title)+'</span> <span class="time">'+times+'</span></div>';
   }
-  if(pills.length){
-    const times=pills.map(p=>p.time).filter(Boolean).join(' · ');
-    const title=pills.length===1?'Medicación':`${pills.length} tomas`;
-    lines+=`<div class="line"><span class="em">💊</span> <span>${escapeHTML(title)}</span> <span class="time">${times||'—'}</span></div>`;
+  if(a.pills.length){
+    const times=a.pills.map(function(p){return p.time;}).filter(Boolean).join(' · ');
+    const title=a.pills.length===1?'Medicación':a.pills.length+' tomas';
+    lines+='<div class="line"><span class="em">💊</span> <span>'+escapeHTML(title)+'</span> <span class="time">'+(times||'—')+'</span></div>';
   }
-  return `<div class="med-banner"><div class="headline">Aviso de hoy</div>${lines}</div>`;
+  return '<div class="med-banner"><div class="headline">Aviso de hoy</div>'+lines+'</div>';
 }
 function render(){
   applyTheme();
-  document.querySelectorAll('.nb-btn').forEach(b=>{
+  document.querySelectorAll('.nb-btn').forEach(function(b){
     b.classList.toggle('active', b.dataset.nb===state.currentNotebook);
-    b.onclick=()=>switchNotebook(b.dataset.nb);
+    b.onclick=function(){switchNotebook(b.dataset.nb);};
   });
   const header=document.getElementById('header');
   const main=document.getElementById('main');
@@ -822,13 +822,16 @@ function render(){
   const tabDefs = esFam
     ? [{id:'hoy',ico:'📅',label:'Hoy'},{id:'calendario',ico:'📆',label:'Calendario'},{id:'notas',ico:'📝',label:'Notas'},{id:'importantes',ico:'⭐',label:'Importantes'},{id:'pendientes',ico:'📌',label:'Pendientes'},{id:'buscar',ico:'🔎',label:'Buscar'}]
     : [{id:'hoy',ico:'📅',label:'Hoy'},{id:'indice',ico:'📖',label:'Índice'},{id:'calendario',ico:'🗓',label:'Calendario'},{id:'buscar',ico:'🔍',label:'Buscar'},{id:'importantes',ico:'⭐',label:'Importantes'}];
-  tabs.innerHTML=tabDefs.map(t=>
-    `<button data-tab="${t.id}" class="${currentTab===t.id?'active':''}"><span class="ico">${t.ico}</span>${t.label}</button>`).join('');
-  tabs.querySelectorAll('button').forEach(b=>b.onclick=()=>{
-    currentTab=b.dataset.tab;
-    if(currentTab==='calendario'){calMonth=new Date();}
-    if(currentTab==='buscar'){searchQuery='';}
-    render();
+  tabs.innerHTML=tabDefs.map(function(t){
+    return '<button data-tab="'+t.id+'" class="'+(currentTab===t.id?'active':'')+'"><span class="ico">'+t.ico+'</span>'+t.label+'</button>';
+  }).join('');
+  tabs.querySelectorAll('button').forEach(function(b){
+    b.onclick=function(){
+      currentTab=b.dataset.tab;
+      if(currentTab==='calendario'){calMonth=new Date();}
+      if(currentTab==='buscar'){searchQuery='';}
+      render();
+    };
   });
   if(currentTab==='hoy'){
     if(esFam){ renderFamHeader(header); fab.style.display='flex'; renderFamDay(main); }
@@ -838,7 +841,7 @@ function render(){
     fab.style.display='flex'; renderIndex(main);
   } else if(currentTab==='calendario'){
     if(esFam){
-      header.innerHTML=`<div class="fam-header"><div class="fam-hello">Calendario</div><div class="fam-date">Toca un día para abrirlo</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>`;
+      header.innerHTML='<div class="fam-header"><div class="fam-hello">Calendario</div><div class="fam-date">Toca un día para abrirlo</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>';
     } else {
       renderCuadHeader(header,{mini:true, title:'Calendario', sub:'Toca un día para abrirlo'});
     }
@@ -846,7 +849,7 @@ function render(){
     fab.style.display='flex'; renderCalendar(main);
   } else if(currentTab==='notas'){
     if(esFam){
-      header.innerHTML=`<div class="fam-header"><div class="fam-hello">Notas</div><div class="fam-date">Todas las anotaciones</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>`;
+      header.innerHTML='<div class="fam-header"><div class="fam-hello">Notas</div><div class="fam-date">Todas las anotaciones</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>';
     } else {
       renderCuadHeader(header,{mini:true, title:'Notas', sub:'Todas las anotaciones'});
     }
@@ -854,7 +857,7 @@ function render(){
     fab.style.display='flex'; renderAllNotes(main);
   } else if(currentTab==='importantes'){
     if(esFam){
-      header.innerHTML=`<div class="fam-header"><div class="fam-hello">Importantes</div><div class="fam-date">Marcadas con ⭐</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>`;
+      header.innerHTML='<div class="fam-header"><div class="fam-hello">Importantes</div><div class="fam-date">Marcadas con ⭐</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>';
     } else {
       renderCuadHeader(header,{mini:true, title:'Importantes', sub:'Lo que no quieres perder de vista'});
     }
@@ -862,7 +865,7 @@ function render(){
     fab.style.display='flex'; renderImportantes(main);
   } else if(currentTab==='pendientes'){
     if(esFam){
-      header.innerHTML=`<div class="fam-header"><div class="fam-hello">Pendientes</div><div class="fam-date">Sin completar</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>`;
+      header.innerHTML='<div class="fam-header"><div class="fam-hello">Pendientes</div><div class="fam-date">Sin completar</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>';
     } else {
       renderCuadHeader(header,{mini:true, title:'Pendientes', sub:'Sin completar'});
     }
@@ -870,7 +873,7 @@ function render(){
     fab.style.display='flex'; renderPendientes(main);
   } else if(currentTab==='buscar'){
     if(esFam){
-      header.innerHTML=`<div class="fam-header"><div class="fam-hello">Buscar</div><div class="fam-date">En título, texto, lugar…</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>`;
+      header.innerHTML='<div class="fam-header"><div class="fam-hello">Buscar</div><div class="fam-date">En título, texto, lugar…</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>';
     } else {
       renderCuadHeader(header,{mini:true, title:'Buscar', sub:'En todo lo que has escrito'});
     }
@@ -883,87 +886,62 @@ function render(){
       const banner=document.createElement('div');
       banner.className='late';
       banner.style.cssText='background:linear-gradient(90deg,#fff4e0,#ffe9cc);border:1px solid #e0c3a8;color:#7a3b12;border-radius:12px;padding:10px 14px;margin:10px 4px 0;font-size:13.5px;display:flex;align-items:center;justify-content:space-between;gap:8px';
-      banner.innerHTML=`<span>⚠︎ ${late.length} pendiente${late.length>1?'s':''} de días anteriores</span><button id="seelate" style="background:#7a3b12;color:#fff;border:none;border-radius:14px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">Ver</button>`;
+      banner.innerHTML='<span>⚠︎ '+late.length+' pendiente'+(late.length>1?'s':'')+' de días anteriores</span><button id="seelate" style="background:#7a3b12;color:#fff;border:none;border-radius:14px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer">Ver</button>';
       main.insertBefore(banner,main.firstChild);
-      banner.querySelector('#seelate').onclick=()=>{currentTab='pendientes';render();};
+      banner.querySelector('#seelate').onclick=function(){currentTab='pendientes';render();};
     }
   }
-  fab.onclick=()=>openQuickWrite();
+  fab.onclick=function(){openQuickWrite();};
 }
 function isToday(iso){return iso===todayISO();}
 function renderCuadHeader(header, opts){
   opts=opts||{};
   if(opts.mini){
-    header.innerHTML=`<div class="cuad-header"><div><div class="cuad-date-main">${escapeHTML(opts.title||'')}</div><div class="cuad-date-sub">${escapeHTML(opts.sub||'')}</div></div><div class="cuad-actions"><button id="settings" aria-label="Ajustes">⚙︎</button></div></div>`;
+    header.innerHTML='<div class="cuad-header"><div><div class="cuad-date-main">'+escapeHTML(opts.title||'')+'</div><div class="cuad-date-sub">'+escapeHTML(opts.sub||'')+'</div></div><div class="cuad-actions"><button id="settings" aria-label="Ajustes">⚙︎</button></div></div>';
     header.querySelector('#settings').onclick=openSettings;
     return;
   }
   const iso=currentDate;
-  header.innerHTML=`
-    <div class="cuad-header">
-      <div>
-        <div class="cuad-day-label">${isToday(iso)?'HOY · ':''}${dayName(iso).toUpperCase()}</div>
-        <div class="cuad-date-main">${parseISO(iso).getDate()} ${monthNameUpper(iso)} ${parseISO(iso).getFullYear()}</div>
-        <div class="cuad-date-sub">Escribe y organiza a tu ritmo</div>
-      </div>
-      <div class="cuad-actions">
-        <button class="btn-cal" id="pickDate" aria-label="Elegir fecha">🗓</button>
-        <button id="settings" aria-label="Ajustes">⚙︎</button>
-      </div>
-    </div>
-    <div class="cuad-nav">
-      <button id="prev">← Ayer</button>
-      <button class="home" id="goToday">HOY</button>
-      <button id="next">Mañana →</button>
-    </div>`;
-  header.querySelector('#prev').onclick=()=>{currentDate=addDays(currentDate,-1);render();};
-  header.querySelector('#next').onclick=()=>{currentDate=addDays(currentDate,1);render();};
-  header.querySelector('#goToday').onclick=()=>{currentDate=todayISO();render();};
-  header.querySelector('#pickDate').onclick=()=>{currentTab='calendario';calMonth=parseISO(currentDate);render();};
+  header.innerHTML='<div class="cuad-header"><div><div class="cuad-day-label">'+(isToday(iso)?'HOY · ':'')+dayName(iso).toUpperCase()+'</div><div class="cuad-date-main">'+parseISO(iso).getDate()+' '+monthNameUpper(iso)+' '+parseISO(iso).getFullYear()+'</div><div class="cuad-date-sub">Escribe y organiza a tu ritmo</div></div><div class="cuad-actions"><button class="btn-cal" id="pickDate" aria-label="Elegir fecha">🗓</button><button id="settings" aria-label="Ajustes">⚙︎</button></div></div><div class="cuad-nav"><button id="prev">← Ayer</button><button class="home" id="goToday">HOY</button><button id="next">Mañana →</button></div>';
+  header.querySelector('#prev').onclick=function(){currentDate=addDays(currentDate,-1);render();};
+  header.querySelector('#next').onclick=function(){currentDate=addDays(currentDate,1);render();};
+  header.querySelector('#goToday').onclick=function(){currentDate=todayISO();render();};
+  header.querySelector('#pickDate').onclick=function(){currentTab='calendario';calMonth=parseISO(currentDate);render();};
   header.querySelector('#settings').onclick=openSettings;
 }
 function renderCuadDay(main){
   const list=notesForDate(currentDate);
   if(!list.length){
-    main.innerHTML=`<div class="notebook-page"><div class="empty"><span class="quill">✎</span><b>Página en blanco</b>Toca <b style="display:inline">+ Escribir</b> para empezar.</div></div>`;
+    main.innerHTML='<div class="notebook-page"><div class="empty"><span class="quill">✎</span><b>Página en blanco</b>Toca <b style="display:inline">+ Escribir</b> para empezar.</div></div>';
     return;
   }
   let html='<div class="notebook-page">';
-  list.forEach(n=>{ html+=noteHTML(n); });
+  list.forEach(function(n){ html+=noteHTML(n); });
   html+='</div>';
   main.innerHTML=html; wireNotes(main);
 }
 function noteHTML(n){
-  const timeLabel = n.time ? `<div class="note-time">${n.time}</div>` : '';
+  const timeLabel = n.time ? '<div class="note-time">'+n.time+'</div>' : '';
   const tags=[];
-  if(n.label==='trabajo') tags.push(`<span class="note-tag work">TRABAJO</span>`);
-  if(n.label==='personal') tags.push(`<span class="note-tag personal">PERSONAL</span>`);
-  if(n.important) tags.push(`<span class="note-tag important">⭐ IMPORTANTE</span>`);
-  if(n.place) tags.push(`<span class="note-tag">📍 ${escapeHTML(n.place)}</span>`);
-  if(n.alert) tags.push(`<span class="note-tag">⏰ ${escapeHTML(n.alert)}</span>`);
+  if(n.label==='trabajo') tags.push('<span class="note-tag work">TRABAJO</span>');
+  if(n.label==='personal') tags.push('<span class="note-tag personal">PERSONAL</span>');
+  if(n.important) tags.push('<span class="note-tag important">⭐ IMPORTANTE</span>');
+  if(n.place) tags.push('<span class="note-tag">📍 '+escapeHTML(n.place)+'</span>');
+  if(n.alert) tags.push('<span class="note-tag">⏰ '+escapeHTML(n.alert)+'</span>');
   let body='';
-  if(n.text) body+=`<div class="note-text ${n.hand?'hand':''}">${escapeHTML(n.text)}</div>`;
+  if(n.text) body+='<div class="note-text '+(n.hand?'hand':'')+'">'+escapeHTML(n.text)+'</div>';
   if(n.checklist && n.checklist.length){
-    body+=`<ul class="note-checklist">`+n.checklist.map((c,i)=>`
-      <li class="${c.done?'on':''}">
-        <button class="cbox ${c.done?'on':''}" data-act="toggle-item" data-idx="${i}" aria-label="marcar"></button>
-        <span>${escapeHTML(c.text)}</span>
-      </li>`).join('')+`</ul>`;
+    body+='<ul class="note-checklist">'+n.checklist.map(function(c,i){
+      return '<li class="'+(c.done?'on':'')+'"><button class="cbox '+(c.done?'on':'')+'" data-act="toggle-item" data-idx="'+i+'" aria-label="marcar"></button><span>'+escapeHTML(c.text)+'</span></li>';
+    }).join('')+'</ul>';
   }
-  return `
-    <div class="note ${n.done?'done':''}" data-id="${n.id}">
-      <button class="note-check ${n.done?'on':''}" data-act="check" aria-label="completar"></button>
-      ${timeLabel}
-      ${body}
-      ${tags.length?`<div class="note-tags">${tags.join('')}</div>`:''}
-      <button class="note-more" data-act="more" aria-label="más">⋯</button>
-    </div>`;
+  return '<div class="note '+(n.done?'done':'')+'" data-id="'+n.id+'"><button class="note-check '+(n.done?'on':'')+'" data-act="check" aria-label="completar"></button>'+timeLabel+body+(tags.length?'<div class="note-tags">'+tags.join('')+'</div>':'')+'<button class="note-more" data-act="more" aria-label="más">⋯</button></div>';
 }
 function wireNotes(container){
-  container.querySelectorAll('.note').forEach(note=>{
+  container.querySelectorAll('.note').forEach(function(note){
     const id=note.dataset.id;
-    note.querySelectorAll('[data-act]').forEach(btn=>{
-      btn.onclick=(e)=>{
+    note.querySelectorAll('[data-act]').forEach(function(btn){
+      btn.onclick=function(e){
         e.stopPropagation();
         const act=btn.dataset.act;
         if(act==='check') toggleDone(id);
@@ -972,64 +950,43 @@ function wireNotes(container){
       };
     });
     let pressT;
-    note.addEventListener('touchstart',()=>{pressT=setTimeout(()=>{navigator.vibrate&&navigator.vibrate(15);openMoveMenu(id);},600);},{passive:true});
-    note.addEventListener('touchend',()=>clearTimeout(pressT));
-    note.addEventListener('touchmove',()=>clearTimeout(pressT));
+    note.addEventListener('touchstart',function(){pressT=setTimeout(function(){if(navigator.vibrate)navigator.vibrate(15);openMoveMenu(id);},600);},{passive:true});
+    note.addEventListener('touchend',function(){clearTimeout(pressT);});
+    note.addEventListener('touchmove',function(){clearTimeout(pressT);});
   });
 }
 function renderFamHeader(header){
   const esHoy = isToday(currentDate);
   const alertHTML = medicalAlertsHTML(currentDate);
-  header.innerHTML=`
-    <div class="fam-hello">${greeting()}</div>
-    <div class="fam-date">${fmtLong(currentDate)} · ${parseISO(currentDate).getFullYear()}</div>
-    ${alertHTML}
-    <div class="fam-daynav" style="margin-top:12px">
-      <button id="prev">‹</button>
-      <div class="fam-day-label ${esHoy?'home':''}" id="goToday">${esHoy?'HOY':'Ir a HOY'}</div>
-      <button id="next">›</button>
-    </div>
-    <div class="fam-settings-row">
-      <button class="btn-cal" id="pickDate">🗓 Ver calendario</button>
-      <button id="settings">⚙︎ Ajustes</button>
-    </div>`;
-  header.querySelector('#prev').onclick=()=>{currentDate=addDays(currentDate,-1);render();};
-  header.querySelector('#next').onclick=()=>{currentDate=addDays(currentDate,1);render();};
-  header.querySelector('#goToday').onclick=()=>{currentDate=todayISO();render();};
-  header.querySelector('#pickDate').onclick=()=>{currentTab='calendario';calMonth=parseISO(currentDate);render();};
+  header.innerHTML='<div class="fam-hello">'+greeting()+'</div><div class="fam-date">'+fmtLong(currentDate)+' · '+parseISO(currentDate).getFullYear()+'</div>'+alertHTML+'<div class="fam-daynav" style="margin-top:12px"><button id="prev">‹</button><div class="fam-day-label '+(esHoy?'home':'')+'" id="goToday">'+(esHoy?'HOY':'Ir a HOY')+'</div><button id="next">›</button></div><div class="fam-settings-row"><button class="btn-cal" id="pickDate">🗓 Ver calendario</button><button id="settings">⚙︎ Ajustes</button></div>';
+  header.querySelector('#prev').onclick=function(){currentDate=addDays(currentDate,-1);render();};
+  header.querySelector('#next').onclick=function(){currentDate=addDays(currentDate,1);render();};
+  header.querySelector('#goToday').onclick=function(){currentDate=todayISO();render();};
+  header.querySelector('#pickDate').onclick=function(){currentTab='calendario';calMonth=parseISO(currentDate);render();};
   header.querySelector('#settings').onclick=openSettings;
 }
 function renderFamDay(main){
   const t=todayISO();
   const all=notes();
   const dayList=notesForDate(currentDate);
-  const lateAll=all.filter(n=>!n.done&&n.date<t).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
-  const dayPend=dayList.filter(n=>!n.done);
-  const dayDone=dayList.filter(n=>n.done);
-  const dayConHora=dayPend.filter(n=>n.time).sort((a,b)=>a.time.localeCompare(b.time));
-  const daySinHora=dayPend.filter(n=>!n.time);
-  const resumen = `
-    <div class="fam-summary">
-      <div class="box"><div class="num">${dayPend.length}</div><div class="lbl">Pendientes hoy</div></div>
-      <div class="box"><div class="num">${dayDone.length}</div><div class="lbl">Hechas</div></div>
-      <div class="box"><div class="num">${lateAll.length}</div><div class="lbl">Atrasadas</div></div>
-    </div>`;
+  const lateAll=all.filter(function(n){return !n.done&&n.date<t;}).sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time);});
+  const dayPend=dayList.filter(function(n){return !n.done;});
+  const dayDone=dayList.filter(function(n){return n.done;});
+  const dayConHora=dayPend.filter(function(n){return n.time;}).sort(function(a,b){return a.time.localeCompare(b.time);});
+  const daySinHora=dayPend.filter(function(n){return !n.time;});
+  const resumen = '<div class="fam-summary"><div class="box"><div class="num">'+dayPend.length+'</div><div class="lbl">Pendientes hoy</div></div><div class="box"><div class="num">'+dayDone.length+'</div><div class="lbl">Hechas</div></div><div class="box"><div class="num">'+lateAll.length+'</div><div class="lbl">Atrasadas</div></div></div>';
   if(!dayList.length && !lateAll.length){
-    main.innerHTML = resumen + `<div class="empty"><b>Sin nada para hoy</b>Toca el botón <b style="display:inline">+</b> para añadir un recordatorio.</div>`;
+    main.innerHTML = resumen + '<div class="empty"><b>Sin nada para hoy</b>Toca el botón <b style="display:inline">+</b> para añadir un recordatorio.</div>';
     return;
   }
   let html = resumen;
   if(lateAll.length){
-    html+=`<details class="fam-fold" ${lateAll.length<=3?'open':''}>
-      <summary><span>⚠️</span> Atrasado <span class="badge warn">${lateAll.length}</span><span class="arrow">›</span></summary>
-      <div class="fam-fold-body">${lateAll.map(n=>famCardHTML(n)).join('')}</div></details>`;
+    html+='<details class="fam-fold" '+(lateAll.length<=3?'open':'')+'><summary><span>⚠️</span> Atrasado <span class="badge warn">'+lateAll.length+'</span><span class="arrow">›</span></summary><div class="fam-fold-body">'+lateAll.map(famCardHTML).join('')+'</div></details>';
   }
-  if(dayConHora.length) html += `<div class="section-label">🕒 Con hora</div>` + dayConHora.map(n=>famCardHTML(n)).join('');
-  if(daySinHora.length) html += `<div class="section-label">📌 Sin hora</div>` + daySinHora.map(n=>famCardHTML(n)).join('');
+  if(dayConHora.length) html += '<div class="section-label">🕒 Con hora</div>' + dayConHora.map(famCardHTML).join('');
+  if(daySinHora.length) html += '<div class="section-label">📌 Sin hora</div>' + daySinHora.map(famCardHTML).join('');
   if(dayDone.length){
-    html+=`<details class="fam-fold" ${dayDone.length<=2?'open':''}>
-      <summary><span>✅</span> Hecho hoy <span class="badge ok">${dayDone.length}</span><span class="arrow">›</span></summary>
-      <div class="fam-fold-body">${dayDone.map(n=>famCardHTML(n)).join('')}</div></details>`;
+    html+='<details class="fam-fold" '+(dayDone.length<=2?'open':'')+'><summary><span>✅</span> Hecho hoy <span class="badge ok">'+dayDone.length+'</span><span class="arrow">›</span></summary><div class="fam-fold-body">'+dayDone.map(famCardHTML).join('')+'</div></details>';
   }
   main.innerHTML = html; wireFamCards(main);
 }
@@ -1037,37 +994,17 @@ function famCardHTML(n){
   const cat=catInfo(n.category);
   const isLate = !n.done && n.date < todayISO();
   const lines=[];
-  if(n.dose) lines.push(`<div class="fam-line"><span class="em">💊</span> Dosis: <strong>${escapeHTML(n.dose)}</strong></div>`);
-  if(n.place) lines.push(`<div class="fam-line"><span class="em">📍</span> ${escapeHTML(n.place)}</div>`);
-  const alertHTML = n.alert ? `<div class="fam-alert">⏰ Aviso: ${escapeHTML(n.alert)}</div>` : '';
-  const lateHTML = isLate ? `<div class="fam-alert" style="background:#fde2d4;border-color:#e8b48a;color:#8a2d10">⚠️ Pendiente de ${fmtShort(n.date)}</div>` : '';
-  return `
-    <div class="fam-card cat-${cat.id} ${n.done?'done':''}" data-id="${n.id}">
-      <button class="fam-check ${n.done?'on':''}" data-act="check" aria-label="completar"></button>
-      <div class="fam-body">
-        <div class="fam-head">
-          <span class="fam-emoji">${cat.emoji}</span>
-          <div class="fam-cat-label">${cat.tipo}</div>
-          <div class="fam-hour">${n.time?n.time:(n.done?'✓':'—')}</div>
-        </div>
-        <div class="fam-title">${escapeHTML(n.title||'(sin título)')}</div>
-        ${n.text?`<div class="fam-text">${escapeHTML(n.text)}</div>`:''}
-        ${lines.join('')}
-        ${lateHTML}
-        ${alertHTML}
-        <div class="fam-actions">
-          <button data-act="move">📅 Cambiar día</button>
-          <button data-act="edit">✎ Editar</button>
-          <button data-act="more">⋯ Más</button>
-        </div>
-      </div>
-    </div>`;
+  if(n.dose) lines.push('<div class="fam-line"><span class="em">💊</span> Dosis: <strong>'+escapeHTML(n.dose)+'</strong></div>');
+  if(n.place) lines.push('<div class="fam-line"><span class="em">📍</span> '+escapeHTML(n.place)+'</div>');
+  const alertHTML = n.alert ? '<div class="fam-alert">⏰ Aviso: '+escapeHTML(n.alert)+'</div>' : '';
+  const lateHTML = isLate ? '<div class="fam-alert" style="background:#fde2d4;border-color:#e8b48a;color:#8a2d10">⚠️ Pendiente de '+fmtShort(n.date)+'</div>' : '';
+  return '<div class="fam-card cat-'+cat.id+' '+(n.done?'done':'')+'" data-id="'+n.id+'"><button class="fam-check '+(n.done?'on':'')+'" data-act="check" aria-label="completar"></button><div class="fam-body"><div class="fam-head"><span class="fam-emoji">'+cat.emoji+'</span><div class="fam-cat-label">'+cat.tipo+'</div><div class="fam-hour">'+(n.time?n.time:(n.done?'✓':'—'))+'</div></div><div class="fam-title">'+escapeHTML(n.title||'(sin título)')+'</div>'+(n.text?'<div class="fam-text">'+escapeHTML(n.text)+'</div>':'')+lines.join('')+lateHTML+alertHTML+'<div class="fam-actions"><button data-act="move">📅 Cambiar día</button><button data-act="edit">✎ Editar</button><button data-act="more">⋯ Más</button></div></div></div>';
 }
 function wireFamCards(container){
-  container.querySelectorAll('.fam-card').forEach(card=>{
+  container.querySelectorAll('.fam-card').forEach(function(card){
     const id=card.dataset.id;
-    card.querySelectorAll('[data-act]').forEach(btn=>{
-      btn.onclick=(e)=>{
+    card.querySelectorAll('[data-act]').forEach(function(btn){
+      btn.onclick=function(e){
         e.stopPropagation();
         const act=btn.dataset.act;
         if(act==='check') toggleDone(id);
@@ -1077,76 +1014,72 @@ function wireFamCards(container){
       };
     });
     let pressT;
-    card.addEventListener('touchstart',()=>{pressT=setTimeout(()=>{navigator.vibrate&&navigator.vibrate(15);openMoveMenu(id);},600);},{passive:true});
-    card.addEventListener('touchend',()=>clearTimeout(pressT));
-    card.addEventListener('touchmove',()=>clearTimeout(pressT));
+    card.addEventListener('touchstart',function(){pressT=setTimeout(function(){if(navigator.vibrate)navigator.vibrate(15);openMoveMenu(id);},600);},{passive:true});
+    card.addEventListener('touchend',function(){clearTimeout(pressT);});
+    card.addEventListener('touchmove',function(){clearTimeout(pressT);});
   });
 }
 function renderIndex(main){
-  const all=[...notes()].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
-  if(!all.length){main.innerHTML=`<div class="empty"><span class="quill">📖</span><b>Índice vacío</b>Aquí aparecerán tus anotaciones ordenadas por fecha.</div>`;return;}
+  const all=notes().slice().sort(function(a,b){return b.date.localeCompare(a.date)||b.createdAt-a.createdAt;});
+  if(!all.length){main.innerHTML='<div class="empty"><span class="quill">📖</span><b>Índice vacío</b>Aquí aparecerán tus anotaciones ordenadas por fecha.</div>';return;}
   let html='<div class="index-list">', lastMonth='';
-  all.forEach(n=>{
+  all.forEach(function(n){
     const d=parseISO(n.date);
-    const mk=`${d.getFullYear()}-${d.getMonth()}`;
+    const mk=d.getFullYear()+'-'+d.getMonth();
     if(mk!==lastMonth){
       lastMonth=mk;
       const label=d.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
-      html+=`<div class="index-month">${label}</div>`;
+      html+='<div class="index-month">'+label+'</div>';
     }
     const preview=(n.text||n.title||'(sin texto)').replace(/\n/g,' ');
-    html+=`<div class="index-entry" data-id="${n.id}" data-date="${n.date}">
-      <div class="index-date">${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}</div>
-      <div class="index-text">${escapeHTML(preview)}</div>
-      <div class="index-count">${n.checklist.length?`${n.checklist.filter(c=>c.done).length}/${n.checklist.length}`:''}</div>
-    </div>`;
+    html+='<div class="index-entry" data-id="'+n.id+'" data-date="'+n.date+'"><div class="index-date">'+String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'</div><div class="index-text">'+escapeHTML(preview)+'</div><div class="index-count">'+(n.checklist.length?(n.checklist.filter(function(c){return c.done;}).length+'/'+n.checklist.length):'')+'</div></div>';
   });
   html+='</div>';
   main.innerHTML=html;
-  main.querySelectorAll('.index-entry').forEach(el=>{
-    el.onclick=()=>{currentDate=el.dataset.date;currentTab='hoy';render();};
+  main.querySelectorAll('.index-entry').forEach(function(el){
+    el.onclick=function(){currentDate=el.dataset.date;currentTab='hoy';render();};
   });
 }
 function renderImportantes(main){
-  const list=notes().filter(n=>n.important).sort((a,b)=>a.date.localeCompare(b.date));
+  const list=notes().filter(function(n){return n.important;}).sort(function(a,b){return a.date.localeCompare(b.date);});
   const esFam=state.currentNotebook==='familiar';
-  if(!list.length){main.innerHTML=`<div class="empty"><b>Sin importantes</b>Marca con ⭐ lo que no quieras perder.</div>`;return;}
-  if(esFam){ main.innerHTML=list.map(n=>famCardHTML(n)).join(''); wireFamCards(main); return; }
+  if(!list.length){main.innerHTML='<div class="empty"><b>Sin importantes</b>Marca con ⭐ lo que no quieras perder.</div>';return;}
+  if(esFam){ main.innerHTML=list.map(famCardHTML).join(''); wireFamCards(main); return; }
   let html='<div class="notebook-page">';
-  list.forEach(n=>{ html+=noteHTML(n); });
+  list.forEach(function(n){ html+=noteHTML(n); });
   html+='</div>'; main.innerHTML=html; wireNotes(main);
 }
 function renderPendientes(main){
   const t=todayISO();
   const esFam=state.currentNotebook==='familiar';
-  const pend=notes().filter(n=>!n.done);
-  const late=pend.filter(n=>n.date<t).sort((a,b)=>a.date.localeCompare(b.date));
-  const today=pend.filter(n=>n.date===t);
-  const future=pend.filter(n=>n.date>t).sort((a,b)=>a.date.localeCompare(b.date));
-  const render=(arr)=>esFam?arr.map(n=>famCardHTML(n)).join(''):`<div class="notebook-page">${arr.map(n=>noteHTML(n)).join('')}</div>`;
+  const pend=notes().filter(function(n){return !n.done;});
+  const late=pend.filter(function(n){return n.date<t;}).sort(function(a,b){return a.date.localeCompare(b.date);});
+  const today=pend.filter(function(n){return n.date===t;});
+  const future=pend.filter(function(n){return n.date>t;}).sort(function(a,b){return a.date.localeCompare(b.date);});
+  const render=function(arr){return esFam?arr.map(famCardHTML).join(''):'<div class="notebook-page">'+arr.map(noteHTML).join('')+'</div>';};
   let html='';
-  if(late.length)html+=`<div class="section-label">⚠︎ Atrasadas</div>`+render(late);
-  if(today.length)html+=`<div class="section-label">📌 Hoy</div>`+render(today);
-  if(future.length)html+=`<div class="section-label">Próximas</div>`+render(future);
-  if(!html)html=`<div class="empty"><b>Todo hecho</b>No tienes pendientes.</div>`;
+  if(late.length)html+='<div class="section-label">⚠︎ Atrasadas</div>'+render(late);
+  if(today.length)html+='<div class="section-label">📌 Hoy</div>'+render(today);
+  if(future.length)html+='<div class="section-label">Próximas</div>'+render(future);
+  if(!html)html='<div class="empty"><b>Todo hecho</b>No tienes pendientes.</div>';
   main.innerHTML=html;
   esFam?wireFamCards(main):wireNotes(main);
 }
 function renderAllNotes(main){
-  const list=[...notes()].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
-  if(!list.length){main.innerHTML=`<div class="empty"><b>Sin notas</b>Empieza con el botón +</div>`;return;}
+  const list=notes().slice().sort(function(a,b){return b.date.localeCompare(a.date)||b.createdAt-a.createdAt;});
+  if(!list.length){main.innerHTML='<div class="empty"><b>Sin notas</b>Empieza con el botón +</div>';return;}
   const esFam=state.currentNotebook==='familiar';
   if(esFam){
     let last='',html='';
-    list.forEach(n=>{
-      if(n.date!==last){last=n.date;html+=`<div class="section-label">${fmtLong(n.date)} · ${fmtShort(n.date)}</div>`;}
+    list.forEach(function(n){
+      if(n.date!==last){last=n.date;html+='<div class="section-label">'+fmtLong(n.date)+' · '+fmtShort(n.date)+'</div>';}
       html+=famCardHTML(n);
     });
     main.innerHTML=html;wireFamCards(main);
   } else {
     let last='',html='<div class="notebook-page">';
-    list.forEach(n=>{
-      if(n.date!==last){last=n.date;html+=`<div class="section-label" style="padding-left:0">${fmtLong(n.date).toUpperCase()}</div>`;}
+    list.forEach(function(n){
+      if(n.date!==last){last=n.date;html+='<div class="section-label" style="padding-left:0">'+fmtLong(n.date).toUpperCase()+'</div>';}
       html+=noteHTML(n);
     });
     html+='</div>'; main.innerHTML=html; wireNotes(main);
@@ -1154,44 +1087,42 @@ function renderAllNotes(main){
 }
 function renderBuscar(main){
   const esFam=state.currentNotebook==='familiar';
-  main.innerHTML=`
-    <div class="searchbox"><input id="q" type="text" placeholder="Buscar en todo lo que has escrito…" value="${escapeAttr(searchQuery)}" autocomplete="off"></div>
-    <div id="results"></div>`;
+  main.innerHTML='<div class="searchbox"><input id="q" type="text" placeholder="Buscar en todo lo que has escrito…" value="'+escapeAttr(searchQuery)+'" autocomplete="off"></div><div id="results"></div>';
   const q=main.querySelector('#q');
   const results=main.querySelector('#results');
-  const run=()=>{
+  const run=function(){
     searchQuery=q.value.trim().toLowerCase();
-    if(!searchQuery){results.innerHTML=`<div class="empty">Escribe algo para buscar.</div>`;return;}
-    const found=notes().filter(n=>
-      (n.title||'').toLowerCase().includes(searchQuery)||
-      (n.text||'').toLowerCase().includes(searchQuery)||
-      (n.category||'').toLowerCase().includes(searchQuery)||
-      (n.place||'').toLowerCase().includes(searchQuery)||
-      (n.dose||'').toLowerCase().includes(searchQuery)||
-      (n.checklist||[]).some(c=>(c.text||'').toLowerCase().includes(searchQuery))
-    ).sort((a,b)=>b.date.localeCompare(a.date));
-    if(!found.length){results.innerHTML=`<div class="empty">Sin resultados.</div>`;return;}
+    if(!searchQuery){results.innerHTML='<div class="empty">Escribe algo para buscar.</div>';return;}
+    const found=notes().filter(function(n){
+      return (n.title||'').toLowerCase().indexOf(searchQuery)>=0 ||
+             (n.text||'').toLowerCase().indexOf(searchQuery)>=0 ||
+             (n.category||'').toLowerCase().indexOf(searchQuery)>=0 ||
+             (n.place||'').toLowerCase().indexOf(searchQuery)>=0 ||
+             (n.dose||'').toLowerCase().indexOf(searchQuery)>=0 ||
+             (n.checklist||[]).some(function(c){return (c.text||'').toLowerCase().indexOf(searchQuery)>=0;});
+    }).sort(function(a,b){return b.date.localeCompare(a.date);});
+    if(!found.length){results.innerHTML='<div class="empty">Sin resultados.</div>';return;}
     if(esFam){
-      results.innerHTML=found.map(n=>famCardHTML(n)).join('');
+      results.innerHTML=found.map(famCardHTML).join('');
       wireFamCards(results);
     } else {
       let last='',html='<div class="notebook-page">';
-      found.forEach(n=>{
-        if(n.date!==last){last=n.date;html+=`<div class="section-label" style="padding-left:0">${fmtShort(n.date)}</div>`;}
+      found.forEach(function(n){
+        if(n.date!==last){last=n.date;html+='<div class="section-label" style="padding-left:0">'+fmtShort(n.date)+'</div>';}
         html+=noteHTML(n);
       });
       html+='</div>'; results.innerHTML=html; wireNotes(results);
     }
   };
   q.addEventListener('input',run); run();
-  if(!searchQuery) setTimeout(()=>q.focus(),100);
+  if(!searchQuery) setTimeout(function(){q.focus();},100);
 }
 function countMedicalInMonth(y,m){
-  const prefix=`${y}-${String(m+1).padStart(2,'0')}-`;
-  const list=notes().filter(n=>n.date.startsWith(prefix)&&!n.done&&(n.category==='medico'||n.category==='medicacion'));
-  const meds=list.filter(n=>n.category==='medico').length;
-  const pills=list.filter(n=>n.category==='medicacion').length;
-  return {meds,pills,total:list.length};
+  const prefix=y+'-'+String(m+1).padStart(2,'0')+'-';
+  const list=notes().filter(function(n){return n.date.indexOf(prefix)===0 && !n.done && (n.category==='medico'||n.category==='medicacion');});
+  const meds=list.filter(function(n){return n.category==='medico';}).length;
+  const pills=list.filter(function(n){return n.category==='medicacion';}).length;
+  return {meds:meds,pills:pills,total:list.length};
 }
 function renderCalendar(main){
   const y=calMonth.getFullYear(),m=calMonth.getMonth();
@@ -1200,66 +1131,45 @@ function renderCalendar(main){
   const daysInMonth=new Date(y,m+1,0).getDate();
   const mn=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   const esFam=state.currentNotebook==='familiar';
-  const {meds:medCount,pills:pillCount,total:medTotal}=countMedicalInMonth(y,m);
-  const medInfo = esFam && medTotal>0 ? `
-    <div class="cal-med-info" id="medInfo">
-      <span class="em">🩺</span>
-      Este mes: ${medCount} cita${medCount!==1?'s':''} médica${medCount!==1?'s':''} · ${pillCount} toma${pillCount!==1?'s':''} de medicación
-    </div>` : '';
-  let html=`<div class="cal">
-    <div class="cal-head">
-      <button id="calPrev">‹</button>
-      <div class="mtitle">${mn[m]} ${y}</div>
-      <button id="calNext">›</button>
-    </div>
-    ${medInfo}
-    <div class="cal-grid">
-      ${['L','M','X','J','V','S','D'].map(d=>`<div class="wd">${d}</div>`).join('')}`;
+  const mm=countMedicalInMonth(y,m);
+  const medInfo = esFam && mm.total>0 ? '<div class="cal-med-info" id="medInfo"><span class="em">🩺</span>Este mes: '+mm.meds+' cita'+(mm.meds!==1?'s':'')+' médica'+(mm.meds!==1?'s':'')+' · '+mm.pills+' toma'+(mm.pills!==1?'s':'')+' de medicación</div>' : '';
+  let html='<div class="cal"><div class="cal-head"><button id="calPrev">‹</button><div class="mtitle">'+mn[m]+' '+y+'</div><button id="calNext">›</button></div>'+medInfo+'<div class="cal-grid">';
+  ['L','M','X','J','V','S','D'].forEach(function(d){html+='<div class="wd">'+d+'</div>';});
   const prevDays=new Date(y,m,0).getDate();
-  for(let i=startWd;i>0;i--){html+=`<div class="cal-cell muted">${prevDays-i+1}</div>`;}
+  for(let i=startWd;i>0;i--){html+='<div class="cal-cell muted">'+(prevDays-i+1)+'</div>';}
   const t=todayISO();
   for(let day=1;day<=daysInMonth;day++){
-    const iso=`${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-    const list=notes().filter(n=>n.date===iso);
-    const hasImp=list.some(n=>n.important&&!n.done);
-    const hasPend=list.some(n=>!n.done);
-    const allDone=list.length>0&&list.every(n=>n.done);
-    const hasMed=list.some(n=>!n.done&&n.category==='medico');
-    const hasPill=list.some(n=>!n.done&&n.category==='medicacion');
+    const iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    const list=notes().filter(function(n){return n.date===iso;});
+    const hasImp=list.some(function(n){return n.important&&!n.done;});
+    const hasPend=list.some(function(n){return !n.done;});
+    const allDone=list.length>0&&list.every(function(n){return n.done;});
+    const hasMed=list.some(function(n){return !n.done&&n.category==='medico';});
+    const hasPill=list.some(function(n){return !n.done&&n.category==='medicacion';});
     const hasAny=list.length>0;
     let dots='';
     if(list.length){
       if(esFam){
-        dots=`<div class="dots">
-          ${hasMed?'<div class="dot med"></div>':''}
-          ${hasPill?'<div class="dot pill"></div>':''}
-          ${hasImp?'<div class="dot imp"></div>':''}
-          ${hasPend&&!hasImp&&!hasMed&&!hasPill?'<div class="dot"></div>':''}
-          ${allDone&&!hasMed&&!hasPill?'<div class="dot done"></div>':''}
-        </div>`;
+        dots='<div class="dots">'+(hasMed?'<div class="dot med"></div>':'')+(hasPill?'<div class="dot pill"></div>':'')+(hasImp?'<div class="dot imp"></div>':'')+(hasPend&&!hasImp&&!hasMed&&!hasPill?'<div class="dot"></div>':'')+(allDone&&!hasMed&&!hasPill?'<div class="dot done"></div>':'')+'</div>';
       } else {
-        dots=`<div class="dots">
-          ${hasImp?'<div class="dot imp"></div>':''}
-          ${hasPend&&!hasImp?'<div class="dot"></div>':''}
-          ${allDone?'<div class="dot done"></div>':''}
-        </div>`;
+        dots='<div class="dots">'+(hasImp?'<div class="dot imp"></div>':'')+(hasPend&&!hasImp?'<div class="dot"></div>':'')+(allDone?'<div class="dot done"></div>':'')+'</div>';
       }
     }
     const cls=['cal-cell'];
     if(iso===t)cls.push('today');
     if(iso===currentDate)cls.push('selected');
     if(hasAny)cls.push('has-notes');
-    html+=`<div class="${cls.join(' ')}" data-date="${iso}">${day}${dots}</div>`;
+    html+='<div class="'+cls.join(' ')+'" data-date="'+iso+'">'+day+dots+'</div>';
   }
   const total=startWd+daysInMonth;
   const rest=(7-total%7)%7;
-  for(let i=1;i<=rest;i++){html+=`<div class="cal-cell muted">${i}</div>`;}
-  html+=`</div></div>`;
+  for(let i=1;i<=rest;i++){html+='<div class="cal-cell muted">'+i+'</div>';}
+  html+='</div></div>';
   main.innerHTML=html;
-  main.querySelector('#calPrev').onclick=()=>{calMonth=new Date(y,m-1,1);render();};
-  main.querySelector('#calNext').onclick=()=>{calMonth=new Date(y,m+1,1);render();};
-  main.querySelectorAll('.cal-cell[data-date]').forEach(c=>{
-    c.onclick=()=>{currentDate=c.dataset.date;currentTab='hoy';render();};
+  main.querySelector('#calPrev').onclick=function(){calMonth=new Date(y,m-1,1);render();};
+  main.querySelector('#calNext').onclick=function(){calMonth=new Date(y,m+1,1);render();};
+  main.querySelectorAll('.cal-cell[data-date]').forEach(function(c){
+    c.onclick=function(){currentDate=c.dataset.date;currentTab='hoy';render();};
   });
 }
 function openSheet(html, className){
@@ -1267,44 +1177,28 @@ function openSheet(html, className){
   const sheet=document.getElementById('sheet');
   sheet.className='sheet'+(className?' '+className:'');
   sheet.innerHTML=html;bg.classList.add('open');
-  bg.onclick=(e)=>{if(e.target===bg) closeSheet();};
+  bg.onclick=function(e){if(e.target===bg) closeSheet();};
 }
 function closeSheet(){document.getElementById('sheetBg').classList.remove('open');}
 function openQuickWrite(){
   if(state.currentNotebook==='familiar'){ openEditorFam(null); return; }
-  openSheet(`
-    <h3>Escribir</h3>
-    <textarea id="q_text" placeholder="Escribe lo que quieras…" autofocus></textarea>
-    <div class="quick-meta" id="q_meta">
-      <button data-opt="label" data-val="trabajo">📘 Trabajo</button>
-      <button data-opt="label" data-val="personal">🟩 Personal</button>
-      <button data-opt="important">⭐ Importante</button>
-      <button data-opt="hand">✍️ Manuscrita</button>
-      <button data-opt="time">🕒 Hora</button>
-      <button data-opt="checklist">☑ Lista</button>
-    </div>
-    <div id="q_extra"></div>
-    <div class="actions" style="margin-top:16px">
-      <button class="btn-ghost" id="bCancel">Cancelar</button>
-      <button class="btn-primary" id="bSave">Guardar</button>
-    </div>
-  `, 'quick-sheet');
+  openSheet('<h3>Escribir</h3><textarea id="q_text" placeholder="Escribe lo que quieras…" autofocus></textarea><div class="quick-meta" id="q_meta"><button data-opt="label" data-val="trabajo">📘 Trabajo</button><button data-opt="label" data-val="personal">🟩 Personal</button><button data-opt="important">⭐ Importante</button><button data-opt="hand">✍️ Manuscrita</button><button data-opt="time">🕒 Hora</button><button data-opt="checklist">☑ Lista</button></div><div id="q_extra"></div><div class="actions" style="margin-top:16px"><button class="btn-ghost" id="bCancel">Cancelar</button><button class="btn-primary" id="bSave">Guardar</button></div>', 'quick-sheet');
   const sheet=document.getElementById('sheet');
   const ta=sheet.querySelector('#q_text');
-  setTimeout(()=>ta.focus(),120);
+  setTimeout(function(){ta.focus();},120);
   const draft={label:'',important:false,hand:false,time:'',checklist:[]};
-  sheet.querySelectorAll('#q_meta button').forEach(b=>{
-    b.onclick=()=>{
+  sheet.querySelectorAll('#q_meta button').forEach(function(b){
+    b.onclick=function(){
       const opt=b.dataset.opt;
       if(opt==='label'){
         const v=b.dataset.val;
         if(draft.label===v){draft.label='';b.classList.remove('on');}
-        else{draft.label=v;sheet.querySelectorAll('#q_meta button[data-opt="label"]').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
+        else{draft.label=v;sheet.querySelectorAll('#q_meta button[data-opt="label"]').forEach(function(x){x.classList.remove('on');});b.classList.add('on');}
       } else if(opt==='important'){draft.important=!draft.important;b.classList.toggle('on',draft.important);}
       else if(opt==='hand'){draft.hand=!draft.hand;b.classList.toggle('on',draft.hand);ta.classList.toggle('hand',draft.hand);}
       else if(opt==='time'){
         if(draft.time){draft.time='';b.classList.remove('on');sheet.querySelector('#q_extra').innerHTML='';}
-        else{draft.time='00:00';b.classList.add('on');sheet.querySelector('#q_extra').innerHTML=`<div class="label">Hora</div><input type="time" id="q_time" value="00:00">`;sheet.querySelector('#q_time').addEventListener('input',e=>draft.time=e.target.value);}
+        else{draft.time='00:00';b.classList.add('on');sheet.querySelector('#q_extra').innerHTML='<div class="label">Hora</div><input type="time" id="q_time" value="00:00">';sheet.querySelector('#q_time').addEventListener('input',function(e){draft.time=e.target.value;});}
       } else if(opt==='checklist'){
         const extra=sheet.querySelector('#q_extra');
         if(draft.checklist.length){draft.checklist=[];b.classList.remove('on');extra.innerHTML='';}
@@ -1313,15 +1207,15 @@ function openQuickWrite(){
     };
   });
   sheet.querySelector('#bCancel').onclick=closeSheet;
-  sheet.querySelector('#bSave').onclick=()=>{
+  sheet.querySelector('#bSave').onclick=function(){
     const text=(ta.value||'').trim();
-    const checklist=draft.checklist.filter(c=>c.text.trim());
+    const checklist=draft.checklist.filter(function(c){return c.text.trim();});
     if(!text && !checklist.length){toast('Escribe algo');return;}
     addNote({
-      title:text.split('\n')[0].slice(0,80), text,
+      title:text.split('\n')[0].slice(0,80), text:text,
       date: currentTab==='hoy'?currentDate:todayISO(),
       time:draft.time, label:draft.label, important:draft.important,
-      hand:draft.hand, checklist
+      hand:draft.hand, checklist:checklist
     });
     toast('✓ Guardado'); closeSheet();
   };
@@ -1329,84 +1223,65 @@ function openQuickWrite(){
 function renderQuickChecklist(sheet,draft){
   const extra=sheet.querySelector('#q_extra');
   const existing=extra.innerHTML;
-  extra.innerHTML=existing+`
-    <div class="label">Lista</div>
-    <div id="q_cl"></div>
-    <button class="moveopt" id="q_addItem" style="text-align:center;border-style:dashed">+ añadir punto</button>`;
+  extra.innerHTML=existing+'<div class="label">Lista</div><div id="q_cl"></div><button class="moveopt" id="q_addItem" style="text-align:center;border-style:dashed">+ añadir punto</button>';
   const cl=extra.querySelector('#q_cl');
-  const renderItems=()=>{
-    cl.innerHTML=draft.checklist.map((c,i)=>`
-      <div class="row" style="margin-bottom:6px;align-items:center">
-        <input type="text" data-idx="${i}" value="${escapeAttr(c.text)}" placeholder="Punto ${i+1}">
-        <button class="moveopt" data-del="${i}" style="flex:0 0 auto;width:auto;padding:8px 12px;margin:0">✕</button>
-      </div>
-    `).join('');
-    cl.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',e=>{draft.checklist[+inp.dataset.idx].text=e.target.value;}));
-    cl.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{draft.checklist.splice(+b.dataset.del,1);renderItems();});
+  const renderItems=function(){
+    cl.innerHTML=draft.checklist.map(function(c,i){
+      return '<div class="row" style="margin-bottom:6px;align-items:center"><input type="text" data-idx="'+i+'" value="'+escapeAttr(c.text)+'" placeholder="Punto '+(i+1)+'"><button class="moveopt" data-del="'+i+'" style="flex:0 0 auto;width:auto;padding:8px 12px;margin:0">✕</button></div>';
+    }).join('');
+    cl.querySelectorAll('input').forEach(function(inp){inp.addEventListener('input',function(e){draft.checklist[+inp.dataset.idx].text=e.target.value;});});
+    cl.querySelectorAll('[data-del]').forEach(function(b){b.onclick=function(){draft.checklist.splice(+b.dataset.del,1);renderItems();};});
   };
   renderItems();
-  extra.querySelector('#q_addItem').onclick=()=>{
+  extra.querySelector('#q_addItem').onclick=function(){
     draft.checklist.push({text:'',done:false});renderItems();
-    setTimeout(()=>{const inputs=cl.querySelectorAll('input');inputs[inputs.length-1]?.focus();},50);
+    setTimeout(function(){const inputs=cl.querySelectorAll('input');if(inputs[inputs.length-1])inputs[inputs.length-1].focus();},50);
   };
 }
 function openEditorFam(id,defaultDate){
-  const editing=id?notes().find(n=>n.id===id):null;
+  const editing=id?notes().find(function(n){return n.id===id;}):null;
   const note=editing||normalizeNote({date:defaultDate||todayISO()});
-  openSheet(`
-    <h3>${editing?'Editar recordatorio':'Nuevo recordatorio'} 🏠</h3>
-    <div class="label">Tipo</div>
-    <div class="cat-grid" id="famCatRow">
-      ${CATEGORIAS_FAMILIA.map(c=>`<button type="button" class="cat-btn ${note.category===c.id?'on':''}" data-c="${c.id}"><span class="em">${c.emoji}</span> ${c.label}</button>`).join('')}
-    </div>
-    <div class="row">
-      <div style="flex:1"><div class="label">Hora</div><input type="time" id="f_time" value="${note.time||''}"></div>
-      <div style="flex:1"><div class="label">Fecha</div><input type="date" id="f_date" value="${note.date}"></div>
-    </div>
-    <div class="label">Título</div>
-    <input type="text" id="f_title" placeholder="Ej: Tomar pastilla de la tensión" value="${escapeAttr(note.title)}" autocomplete="off">
-    <div class="label">Detalle (opcional)</div>
-    <textarea id="f_text" placeholder="Ej: 1 comprimido con agua durante el desayuno">${escapeHTML(note.text)}</textarea>
-    <div class="label">Dosis (opcional)</div>
-    <input type="text" id="f_dose" placeholder="Ej: 1 comprimido, 2 pastillas…" value="${escapeAttr(note.dose)}" autocomplete="off">
-    <div class="label">Lugar (opcional)</div>
-    <input type="text" id="f_place" placeholder="Ej: En casa, Centro de Salud…" value="${escapeAttr(note.place)}" autocomplete="off">
-    <div class="label">Aviso recordatorio</div>
-    <div class="chiprow" id="alertRow">
-      <div class="chip ${note.alert===''?'on':''}" data-a="">Sin aviso</div>
-      <div class="chip ${note.alert==='15 min antes'?'on':''}" data-a="15 min antes">15 min antes</div>
-      <div class="chip ${note.alert==='30 min antes'?'on':''}" data-a="30 min antes">30 min antes</div>
-      <div class="chip ${note.alert==='1 hora antes'?'on':''}" data-a="1 hora antes">1 hora antes</div>
-    </div>
-    <div class="chiprow" style="margin-top:4px">
-      <div class="chip ${note.important?'on':''}" id="impChip">⭐ Importante</div>
-    </div>
-    <div class="actions">
-      ${editing?`<button class="btn-ghost" id="bDel">Eliminar</button>`:''}
-      <button class="btn-primary" id="bSave">Guardar</button>
-    </div>
-  `);
+  openSheet('<h3>'+(editing?'Editar recordatorio':'Nuevo recordatorio')+' 🏠</h3>'+
+    '<div class="label">Tipo</div>'+
+    '<div class="cat-grid" id="famCatRow">'+
+      CATEGORIAS_FAMILIA.map(function(c){return '<button type="button" class="cat-btn '+(note.category===c.id?'on':'')+'" data-c="'+c.id+'"><span class="em">'+c.emoji+'</span> '+c.label+'</button>';}).join('')+
+    '</div>'+
+    '<div class="row"><div style="flex:1"><div class="label">Hora</div><input type="time" id="f_time" value="'+(note.time||'')+'"></div><div style="flex:1"><div class="label">Fecha</div><input type="date" id="f_date" value="'+note.date+'"></div></div>'+
+    '<div class="label">Título</div><input type="text" id="f_title" placeholder="Ej: Tomar pastilla de la tensión" value="'+escapeAttr(note.title)+'" autocomplete="off">'+
+    '<div class="label">Detalle (opcional)</div><textarea id="f_text" placeholder="Ej: 1 comprimido con agua durante el desayuno">'+escapeHTML(note.text)+'</textarea>'+
+    '<div class="label">Dosis (opcional)</div><input type="text" id="f_dose" placeholder="Ej: 1 comprimido, 2 pastillas…" value="'+escapeAttr(note.dose)+'" autocomplete="off">'+
+    '<div class="label">Lugar (opcional)</div><input type="text" id="f_place" placeholder="Ej: En casa, Centro de Salud…" value="'+escapeAttr(note.place)+'" autocomplete="off">'+
+    '<div class="label">Aviso recordatorio</div>'+
+    '<div class="chiprow" id="alertRow">'+
+      '<div class="chip '+(note.alert===''?'on':'')+'" data-a="">Sin aviso</div>'+
+      '<div class="chip '+(note.alert==='15 min antes'?'on':'')+'" data-a="15 min antes">15 min antes</div>'+
+      '<div class="chip '+(note.alert==='30 min antes'?'on':'')+'" data-a="30 min antes">30 min antes</div>'+
+      '<div class="chip '+(note.alert==='1 hora antes'?'on':'')+'" data-a="1 hora antes">1 hora antes</div>'+
+    '</div>'+
+    '<div class="chiprow" style="margin-top:4px"><div class="chip '+(note.important?'on':'')+'" id="impChip">⭐ Importante</div></div>'+
+    '<div class="actions">'+(editing?'<button class="btn-ghost" id="bDel">Eliminar</button>':'')+'<button class="btn-primary" id="bSave">Guardar</button></div>');
   const sheet=document.getElementById('sheet');
   const titleEl=sheet.querySelector('#f_title');
-  setTimeout(()=>titleEl.focus(),150);
+  setTimeout(function(){titleEl.focus();},150);
   let category=note.category||'', alert=note.alert||'', important=!!note.important;
-  sheet.querySelectorAll('#famCatRow .cat-btn').forEach(b=>b.onclick=()=>{
-    const val=b.dataset.c;
-    if(category===val){category='';b.classList.remove('on');}
-    else{category=val;sheet.querySelectorAll('#famCatRow .cat-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
+  sheet.querySelectorAll('#famCatRow .cat-btn').forEach(function(b){
+    b.onclick=function(){
+      const val=b.dataset.c;
+      if(category===val){category='';b.classList.remove('on');}
+      else{category=val;sheet.querySelectorAll('#famCatRow .cat-btn').forEach(function(x){x.classList.remove('on');});b.classList.add('on');}
+    };
   });
-  sheet.querySelectorAll('#alertRow .chip').forEach(c=>c.onclick=()=>{
-    alert=c.dataset.a;
-    sheet.querySelectorAll('#alertRow .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');
+  sheet.querySelectorAll('#alertRow .chip').forEach(function(c){
+    c.onclick=function(){alert=c.dataset.a;sheet.querySelectorAll('#alertRow .chip').forEach(function(x){x.classList.remove('on');});c.classList.add('on');};
   });
-  sheet.querySelector('#impChip').onclick=()=>{important=!important;sheet.querySelector('#impChip').classList.toggle('on',important);};
-  sheet.querySelector('#bSave').onclick=()=>{
+  sheet.querySelector('#impChip').onclick=function(){important=!important;sheet.querySelector('#impChip').classList.toggle('on',important);};
+  sheet.querySelector('#bSave').onclick=function(){
     const data={
       title:sheet.querySelector('#f_title').value.trim(),
       text:sheet.querySelector('#f_text').value.trim(),
       date:sheet.querySelector('#f_date').value||todayISO(),
       time:sheet.querySelector('#f_time').value||'',
-      category, alert, important,
+      category:category, alert:alert, important:important,
       place:sheet.querySelector('#f_place').value.trim(),
       dose:sheet.querySelector('#f_dose').value.trim()
     };
@@ -1416,145 +1291,106 @@ function openEditorFam(id,defaultDate){
     else{addNote(data);toast('✓ Añadido');}
     closeSheet();
   };
-  if(editing){sheet.querySelector('#bDel').onclick=()=>{if(confirm('¿Eliminar este recordatorio?')){deleteNote(id);closeSheet();toast('Eliminado');}};}
-  titleEl.addEventListener('keydown',(e)=>{if(e.key==='Enter'){e.preventDefault();sheet.querySelector('#bSave').click();}});
+  if(editing){sheet.querySelector('#bDel').onclick=function(){if(confirm('¿Eliminar este recordatorio?')){deleteNote(id);closeSheet();toast('Eliminado');}};}
+  titleEl.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();sheet.querySelector('#bSave').click();}});
 }
 function openEditorCuad(id){
-  const n=notes().find(x=>x.id===id);if(!n)return;
-  openSheet(`
-    <h3>Editar</h3>
-    <textarea id="e_text" class="${n.hand?'hand':''}">${escapeHTML(n.text)}</textarea>
-    <div class="label">Hora (opcional)</div>
-    <input type="time" id="e_time" value="${n.time||''}">
-    <div class="label">Fecha</div>
-    <input type="date" id="e_date" value="${n.date}">
-    <div class="label">Etiqueta</div>
-    <div class="chiprow" id="e_label">
-      <div class="chip ${n.label===''?'on':''}" data-v="">—</div>
-      <div class="chip work ${n.label==='trabajo'?'on':''}" data-v="trabajo">📘 Trabajo</div>
-      <div class="chip personal ${n.label==='personal'?'on':''}" data-v="personal">🟩 Personal</div>
-    </div>
-    <div class="chiprow">
-      <div class="chip important ${n.important?'on':''}" id="e_imp">⭐ Importante</div>
-      <div class="chip ${n.hand?'on':''}" id="e_hand">✍️ Manuscrita</div>
-    </div>
-    <div class="actions">
-      <button class="btn-ghost" id="eDel">Eliminar</button>
-      <button class="btn-primary" id="eSave">Guardar</button>
-    </div>
-  `);
+  const n=notes().find(function(x){return x.id===id;});if(!n)return;
+  openSheet('<h3>Editar</h3>'+
+    '<textarea id="e_text" class="'+(n.hand?'hand':'')+'">'+escapeHTML(n.text)+'</textarea>'+
+    '<div class="label">Hora (opcional)</div><input type="time" id="e_time" value="'+(n.time||'')+'">'+
+    '<div class="label">Fecha</div><input type="date" id="e_date" value="'+n.date+'">'+
+    '<div class="label">Etiqueta</div>'+
+    '<div class="chiprow" id="e_label">'+
+      '<div class="chip '+(n.label===''?'on':'')+'" data-v="">—</div>'+
+      '<div class="chip work '+(n.label==='trabajo'?'on':'')+'" data-v="trabajo">📘 Trabajo</div>'+
+      '<div class="chip personal '+(n.label==='personal'?'on':'')+'" data-v="personal">🟩 Personal</div>'+
+    '</div>'+
+    '<div class="chiprow"><div class="chip important '+(n.important?'on':'')+'" id="e_imp">⭐ Importante</div><div class="chip '+(n.hand?'on':'')+'" id="e_hand">✍️ Manuscrita</div></div>'+
+    '<div class="actions"><button class="btn-ghost" id="eDel">Eliminar</button><button class="btn-primary" id="eSave">Guardar</button></div>');
   const sheet=document.getElementById('sheet');
   const ta=sheet.querySelector('#e_text');
-  setTimeout(()=>ta.focus(),120);
+  setTimeout(function(){ta.focus();},120);
   let label=n.label||'', important=!!n.important, hand=!!n.hand;
-  sheet.querySelectorAll('#e_label .chip').forEach(c=>c.onclick=()=>{
-    label=c.dataset.v;
-    sheet.querySelectorAll('#e_label .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');
+  sheet.querySelectorAll('#e_label .chip').forEach(function(c){
+    c.onclick=function(){label=c.dataset.v;sheet.querySelectorAll('#e_label .chip').forEach(function(x){x.classList.remove('on');});c.classList.add('on');};
   });
-  sheet.querySelector('#e_imp').onclick=()=>{important=!important;sheet.querySelector('#e_imp').classList.toggle('on',important);};
-  sheet.querySelector('#e_hand').onclick=()=>{hand=!hand;sheet.querySelector('#e_hand').classList.toggle('on',hand);ta.classList.toggle('hand',hand);};
-  sheet.querySelector('#eDel').onclick=()=>{if(confirm('¿Eliminar esta anotación?')){deleteNote(id);closeSheet();toast('Eliminada');}};
-  sheet.querySelector('#eSave').onclick=()=>{
+  sheet.querySelector('#e_imp').onclick=function(){important=!important;sheet.querySelector('#e_imp').classList.toggle('on',important);};
+  sheet.querySelector('#e_hand').onclick=function(){hand=!hand;sheet.querySelector('#e_hand').classList.toggle('on',hand);ta.classList.toggle('hand',hand);};
+  sheet.querySelector('#eDel').onclick=function(){if(confirm('¿Eliminar esta anotación?')){deleteNote(id);closeSheet();toast('Eliminada');}};
+  sheet.querySelector('#eSave').onclick=function(){
     updateNote(id,{
       text:ta.value.trim(),
       time:sheet.querySelector('#e_time').value||'',
       date:sheet.querySelector('#e_date').value||todayISO(),
-      label, important, hand
+      label:label, important:important, hand:hand
     });
     toast('✓ Guardado');closeSheet();render();
   };
 }
 function openNoteMenu(id){
-  const n=notes().find(x=>x.id===id);if(!n)return;
+  const n=notes().find(function(x){return x.id===id;});if(!n)return;
   const esFam=state.currentNotebook==='familiar';
-  openSheet(`
-    <h3>${escapeHTML((n.title||n.text||'Anotación').slice(0,60))}</h3>
-    <button class="moveopt" data-a="edit">✎ Editar</button>
-    <button class="moveopt" data-a="move">📅 Mover a otra fecha…</button>
-    <button class="moveopt" data-a="check">${n.done?'☐ Marcar como pendiente':'✓ Marcar como completada'}</button>
-    <button class="moveopt" data-a="star">${n.important?'☆ Quitar de importantes':'⭐ Marcar como importante'}</button>
-    <button class="moveopt" data-a="dup">⧉ Duplicar</button>
-    <button class="moveopt" data-a="del" style="color:#c0392b">🗑 Eliminar</button>
-    <div class="actions"><button class="btn-ghost" id="bClose">Cerrar</button></div>
-  `);
+  openSheet('<h3>'+escapeHTML((n.title||n.text||'Anotación').slice(0,60))+'</h3>'+
+    '<button class="moveopt" data-a="edit">✎ Editar</button>'+
+    '<button class="moveopt" data-a="move">📅 Mover a otra fecha…</button>'+
+    '<button class="moveopt" data-a="check">'+(n.done?'☐ Marcar como pendiente':'✓ Marcar como completada')+'</button>'+
+    '<button class="moveopt" data-a="star">'+(n.important?'☆ Quitar de importantes':'⭐ Marcar como importante')+'</button>'+
+    '<button class="moveopt" data-a="dup">⧉ Duplicar</button>'+
+    '<button class="moveopt" data-a="del" style="color:#c0392b">🗑 Eliminar</button>'+
+    '<div class="actions"><button class="btn-ghost" id="bClose">Cerrar</button></div>');
   const sheet=document.getElementById('sheet');
   sheet.querySelector('#bClose').onclick=closeSheet;
-  sheet.querySelectorAll('.moveopt').forEach(b=>b.onclick=()=>{
-    const a=b.dataset.a;
-    if(a==='edit'){closeSheet();setTimeout(()=>{esFam?openEditorFam(id):openEditorCuad(id);},50);}
-    else if(a==='move'){openMoveMenu(id);}
-    else if(a==='check'){toggleDone(id);closeSheet();}
-    else if(a==='star'){toggleImportant(id);closeSheet();}
-    else if(a==='dup'){duplicateNote(id);closeSheet();}
-    else if(a==='del'){if(confirm('¿Eliminar esta anotación?')){deleteNote(id);closeSheet();toast('Eliminada');}}
+  sheet.querySelectorAll('.moveopt').forEach(function(b){
+    b.onclick=function(){
+      const a=b.dataset.a;
+      if(a==='edit'){closeSheet();setTimeout(function(){esFam?openEditorFam(id):openEditorCuad(id);},50);}
+      else if(a==='move'){openMoveMenu(id);}
+      else if(a==='check'){toggleDone(id);closeSheet();}
+      else if(a==='star'){toggleImportant(id);closeSheet();}
+      else if(a==='dup'){duplicateNote(id);closeSheet();}
+      else if(a==='del'){if(confirm('¿Eliminar esta anotación?')){deleteNote(id);closeSheet();toast('Eliminada');}}
+    };
   });
 }
 function openMoveMenu(id){
-  const n=notes().find(x=>x.id===id);if(!n)return;
-  openSheet(`
-    <h3>Mover a…</h3>
-    <button class="moveopt" data-d="${todayISO()}">Hoy · ${fmtShort(todayISO())}</button>
-    <button class="moveopt" data-d="${addDays(todayISO(),1)}">Mañana · ${fmtShort(addDays(todayISO(),1))}</button>
-    <button class="moveopt" data-d="${nextWeekday(1)}">Próximo lunes · ${fmtShort(nextWeekday(1))}</button>
-    <button class="moveopt" data-d="${addDays(todayISO(),7)}">En una semana · ${fmtShort(addDays(todayISO(),7))}</button>
-    <div class="label" style="margin-top:10px">Elegir fecha</div>
-    <input type="date" id="m_date" value="${n.date}">
-    <div class="actions">
-      <button class="btn-ghost" id="bClose">Cancelar</button>
-      <button class="btn-primary" id="bDate">Mover</button>
-    </div>
-  `);
+  const n=notes().find(function(x){return x.id===id;});if(!n)return;
+  openSheet('<h3>Mover a…</h3>'+
+    '<button class="moveopt" data-d="'+todayISO()+'">Hoy · '+fmtShort(todayISO())+'</button>'+
+    '<button class="moveopt" data-d="'+addDays(todayISO(),1)+'">Mañana · '+fmtShort(addDays(todayISO(),1))+'</button>'+
+    '<button class="moveopt" data-d="'+nextWeekday(1)+'">Próximo lunes · '+fmtShort(nextWeekday(1))+'</button>'+
+    '<button class="moveopt" data-d="'+addDays(todayISO(),7)+'">En una semana · '+fmtShort(addDays(todayISO(),7))+'</button>'+
+    '<div class="label" style="margin-top:10px">Elegir fecha</div><input type="date" id="m_date" value="'+n.date+'">'+
+    '<div class="actions"><button class="btn-ghost" id="bClose">Cancelar</button><button class="btn-primary" id="bDate">Mover</button></div>');
   const sheet=document.getElementById('sheet');
   sheet.querySelector('#bClose').onclick=closeSheet;
-  sheet.querySelectorAll('.moveopt').forEach(b=>b.onclick=()=>{moveNote(id,b.dataset.d);closeSheet();});
-  sheet.querySelector('#bDate').onclick=()=>{
-    const d=sheet.querySelector('#m_date').value;
-    if(!d)return;moveNote(id,d);closeSheet();
-  };
+  sheet.querySelectorAll('.moveopt').forEach(function(b){b.onclick=function(){moveNote(id,b.dataset.d);closeSheet();};});
+  sheet.querySelector('#bDate').onclick=function(){const d=sheet.querySelector('#m_date').value;if(!d)return;moveNote(id,d);closeSheet();};
 }
 function openSettings(){
-  openSheet(`
-    <h3>Ajustes</h3>
-    <div class="label">Cuaderno actual</div>
-    <div class="chiprow" id="setNbRow">
-      <div class="chip ${state.currentNotebook==='trabajo'?'on':''}" data-nb="trabajo">✍️ Cuaderno</div>
-      <div class="chip ${state.currentNotebook==='familiar'?'on':''}" data-nb="familiar">🏠 Familia</div>
-    </div>
-    <div class="label">Nombre para el saludo familiar</div>
-    <input type="text" id="famNameInput" placeholder="Ej: mamá, papá, Carmen…" value="${escapeAttr(state.famName)}" autocomplete="off">
-    <small style="display:block;color:var(--ink-soft);font-size:12px;margin:-6px 4px 8px">
-      Aparecerá en el saludo: "Buenos días, mamá".
-    </small>
-    <div class="label">Apariencia</div>
-    <div class="opt" id="optTheme">
-      <div>Modo oscuro<small>Cambia el aspecto del cuaderno</small></div>
-      <div class="switch ${state.theme==='dark'?'on':''}"></div>
-    </div>
-    <div class="label" style="margin-top:16px">Copia de seguridad</div>
-    <div class="opt" id="optExport">
-      <div>Exportar copia de seguridad<small>Descarga un archivo .json con todo</small></div>
-      <div>⤓</div>
-    </div>
-    <div class="opt" id="optImport">
-      <div>Importar copia de seguridad<small>Reemplaza los datos actuales</small></div>
-      <div>⤒</div>
-    </div>
-    <div class="label" style="margin-top:16px">Datos</div>
-    <div class="opt" id="optWipeAll">
-      <div style="color:#c0392b">Borrar TODOS los datos<small>Los dos cuadernos. No se puede deshacer</small></div>
-      <div style="color:#c0392b">🗑</div>
-    </div>
-    <div class="actions"><button class="btn-ghost" id="bClose">Cerrar</button></div>
-  `);
+  openSheet('<h3>Ajustes</h3>'+
+    '<div class="label">Cuaderno actual</div>'+
+    '<div class="chiprow" id="setNbRow"><div class="chip '+(state.currentNotebook==='trabajo'?'on':'')+'" data-nb="trabajo">✍️ Cuaderno</div><div class="chip '+(state.currentNotebook==='familiar'?'on':'')+'" data-nb="familiar">🏠 Familia</div></div>'+
+    '<div class="label">Nombre para el saludo familiar</div>'+
+    '<input type="text" id="famNameInput" placeholder="Ej: mamá, papá, Carmen…" value="'+escapeAttr(state.famName)+'" autocomplete="off">'+
+    '<small style="display:block;color:var(--ink-soft);font-size:12px;margin:-6px 4px 8px">Aparecerá en el saludo: "Buenos días, mamá".</small>'+
+    '<div class="label">Apariencia</div>'+
+    '<div class="opt" id="optTheme"><div>Modo oscuro<small>Cambia el aspecto del cuaderno</small></div><div class="switch '+(state.theme==='dark'?'on':'')+'"></div></div>'+
+    '<div class="label" style="margin-top:16px">Copia de seguridad</div>'+
+    '<div class="opt" id="optExport"><div>Exportar copia de seguridad<small>Descarga un archivo .json con todo</small></div><div>⤓</div></div>'+
+    '<div class="opt" id="optImport"><div>Importar copia de seguridad<small>Reemplaza los datos actuales</small></div><div>⤒</div></div>'+
+    '<div class="label" style="margin-top:16px">Datos</div>'+
+    '<div class="opt" id="optWipeAll"><div style="color:#c0392b">Borrar TODOS los datos<small>Los dos cuadernos. No se puede deshacer</small></div><div style="color:#c0392b">🗑</div></div>'+
+    '<div class="actions"><button class="btn-ghost" id="bClose">Cerrar</button></div>');
   const sheet=document.getElementById('sheet');
   sheet.querySelector('#bClose').onclick=closeSheet;
-  sheet.querySelectorAll('#setNbRow .chip').forEach(c=>c.onclick=()=>{switchNotebook(c.dataset.nb);closeSheet();});
+  sheet.querySelectorAll('#setNbRow .chip').forEach(function(c){c.onclick=function(){switchNotebook(c.dataset.nb);closeSheet();};});
   const nameInput=sheet.querySelector('#famNameInput');
-  nameInput.addEventListener('input',()=>{state.famName=nameInput.value.trim();localStorage.setItem(NAME_KEY,state.famName);});
-  sheet.querySelector('#optTheme').onclick=()=>{toggleTheme();openSettings();};
+  nameInput.addEventListener('input',function(){state.famName=nameInput.value.trim();localStorage.setItem(NAME_KEY,state.famName);});
+  sheet.querySelector('#optTheme').onclick=function(){toggleTheme();openSettings();};
   sheet.querySelector('#optExport').onclick=exportBackup;
   sheet.querySelector('#optImport').onclick=importBackup;
-  sheet.querySelector('#optWipeAll').onclick=()=>{
+  sheet.querySelector('#optWipeAll').onclick=function(){
     if(confirm('¿Borrar TODOS los datos de los dos cuadernos?')){
       if(confirm('Confirma otra vez: se eliminará todo.')){
         state.notebooks.trabajo.notes=[];
@@ -1570,28 +1406,28 @@ function exportBackup(){
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
   const ts=new Date().toISOString().slice(0,10);
-  a.href=url;a.download=`cuaderno-backup-${ts}.json`;
+  a.href=url;a.download='cuaderno-backup-'+ts+'.json';
   document.body.appendChild(a);a.click();a.remove();
   URL.revokeObjectURL(url); toast('Copia exportada');
 }
 function importBackup(){
   const input=document.createElement('input');
   input.type='file';input.accept='application/json,.json';
-  input.onchange=()=>{
+  input.onchange=function(){
     const f=input.files[0];if(!f)return;
     const reader=new FileReader();
-    reader.onload=()=>{
+    reader.onload=function(){
       try{
         const parsed=JSON.parse(reader.result);
         let trabajo=[],familiar=[];
         if(parsed.notebooks){
-          trabajo=Array.isArray(parsed.notebooks.trabajo?.notes)?parsed.notebooks.trabajo.notes:[];
-          familiar=Array.isArray(parsed.notebooks.familiar?.notes)?parsed.notebooks.familiar.notes:[];
+          trabajo=Array.isArray(parsed.notebooks.trabajo && parsed.notebooks.trabajo.notes)?parsed.notebooks.trabajo.notes:[];
+          familiar=Array.isArray(parsed.notebooks.familiar && parsed.notebooks.familiar.notes)?parsed.notebooks.familiar.notes:[];
         } else if(Array.isArray(parsed.notes)){trabajo=parsed.notes;}
         else if(Array.isArray(parsed)){trabajo=parsed;}
-        const, clean=(arr)=>arr.filter(n=>n&&typeof n==='object'&&typeof n.date==='string').map(normalizeNote);
+        const clean=function(arr){return arr.filter(function(n){return n&&typeof n==='object'&&typeof n.date==='string';}).map(normalizeNote);};
         const t=clean(trabajo),fam=clean(familiar);
-        if(!confirm(`Se importarán ${t.length+fam.length} anotaciones (${t.length} cuaderno, ${fam.length} familia). ¿Continuar?`))return;
+        if(!confirm('Se importarán '+(t.length+fam.length)+' anotaciones ('+t.length+' cuaderno, '+fam.length+' familia). ¿Continuar?'))return;
         state.notebooks.trabajo.notes=t;
         state.notebooks.familiar.notes=fam;
         if(parsed.famName){state.famName=String(parsed.famName);localStorage.setItem(NAME_KEY,state.famName);}
@@ -1602,9 +1438,9 @@ function importBackup(){
   };
   input.click();
 }
-function escapeHTML(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function escapeHTML(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function escapeAttr(s){return escapeHTML(s);}
-document.addEventListener('keydown',(e)=>{
+document.addEventListener('keydown',function(e){
   if(e.key==='Escape') closeSheet();
   if(e.target.matches('input,textarea,select'))return;
   if(e.key==='ArrowLeft'&&currentTab==='hoy'){currentDate=addDays(currentDate,-1);render();}
@@ -1615,7 +1451,7 @@ applyTheme();
 load();
 render();
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+  window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
 }
 </script>
 </body>
