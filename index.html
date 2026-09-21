@@ -15,28 +15,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#fbf6ea;
-    --paper-2:#f4ecdc;
-    --paper-line:#e7dcc2;
-    --paper-line-soft:#efe6d0;
-    --ink:#2b2620;
-    --ink-soft:#6f6559;
-    --ink-faint:#b3a99a;
-    --important:#c9762a;
-    --done:#a4a79a;
+    --paper:#fbf6ea; --paper-2:#f4ecdc;
+    --paper-line:#e7dcc2; --paper-line-soft:#efe6d0;
+    --ink:#2b2620; --ink-soft:#6f6559; --ink-faint:#b3a99a;
+    --important:#c9762a; --done:#a4a79a;
     --shadow:0 1px 3px rgba(60,40,20,.06), 0 8px 24px rgba(60,40,20,.04);
-    --radius:16px;
-    --bg:#e9dfc8;
+    --radius:16px; --bg:#e9dfc8;
     --serif:'Fraunces', Georgia, 'Iowan Old Style', serif;
     --sans:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     --hand:'Caveat', cursive;
-    --nb-accent:#3b5a80;
-    --nb-accent-soft:#dbe4ef;
+    --nb-accent:#3b5a80; --nb-accent-soft:#dbe4ef;
   }
   body[data-notebook="trabajo"]{ --nb-accent:#3b5a80; --nb-accent-soft:#dbe4ef; }
   body[data-notebook="familiar"]{ --nb-accent:#a85b3a; --nb-accent-soft:#f0d9c8; }
   [data-theme="dark"]{
-    --paper:#1e1c19; --paper-2:#252220; --paper-line:#332f2a; --paper-line-soft:#2a2723;
+    --paper:#1e1c19; --paper-2:#252220;
+    --paper-line:#332f2a; --paper-line-soft:#2a2723;
     --ink:#ece4d3; --ink-soft:#b0a594; --ink-faint:#6a6155;
     --important:#e0a25b; --done:#5c615a;
     --shadow:0 1px 3px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
@@ -46,11 +40,9 @@
   [data-theme="dark"] body[data-notebook="familiar"]{ --nb-accent:#e0a878; --nb-accent-soft:#3a2a1f; }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0;height:100%}
-  body{
-    font-family:var(--sans);background:var(--bg);color:var(--ink);
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);
     overscroll-behavior-y:none;-webkit-font-smoothing:antialiased;
-    padding-bottom:env(safe-area-inset-bottom);padding-top:env(safe-area-inset-top);
-  }
+    padding-bottom:env(safe-area-inset-bottom);padding-top:env(safe-area-inset-top)}
   #app{max-width:640px;margin:0 auto;min-height:100vh;background:var(--paper);
     display:flex;flex-direction:column;box-shadow:0 0 60px rgba(60,40,20,.06)}
   .notebooks{display:flex;gap:6px;padding:10px 14px 8px;background:var(--paper);
@@ -104,16 +96,15 @@
   .med-banner{background:linear-gradient(135deg,#e6f0fb,#d6e6f8);border:1px solid #b8d4ee;
     border-radius:14px;padding:12px 14px;margin:10px 0 0;display:flex;flex-direction:column;gap:8px}
   [data-theme="dark"] .med-banner{background:linear-gradient(135deg,#1e2a38,#243448);border-color:#3a5470}
-  .med-banner .line{display:flex;align-items:center;gap:10px;font-size:17px;
-    font-weight:600;color:#1e4a75}
+  .med-banner .line{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;color:#1e4a75}
   [data-theme="dark"] .med-banner .line{color:#b8d4ee}
   .med-banner .line .em{font-size:22px}
   .med-banner .line .time{margin-left:auto;font-weight:800;font-size:19px;letter-spacing:-.3px}
   .med-banner .headline{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;
     color:#1e4a75;font-weight:800;margin-bottom:2px;opacity:.75}
   [data-theme="dark"] .med-banner .headline{color:#b8d4ee}
-  main{flex:1;padding:8px 18px 190px;overflow:hidden}
-  main.fam{padding:14px 14px 200px}
+  main{flex:1;padding:8px 18px 220px;overflow:hidden}
+  main.fam{padding:14px 14px 230px}
   .section-label{font-family:var(--serif);font-size:11px;letter-spacing:2px;
     text-transform:uppercase;color:var(--ink-faint);font-weight:600;
     margin:24px 4px 12px;display:flex;align-items:center;gap:8px}
@@ -152,12 +143,23 @@
   [data-theme="dark"] .note-tag.personal{background:#1e2c22;color:#8ec09a}
   .note-tag.important{background:#fbe6cf;color:var(--important)}
   [data-theme="dark"] .note-tag.important{background:#3a2e18;color:#e0a25b}
-  .note-more{background:var(--paper-2);border:1px solid var(--paper-line);
-    color:var(--ink-soft);font-size:20px;width:38px;height:38px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;
-    position:absolute;right:-4px;top:12px;line-height:1;transition:.15s}
-  .note-more:active{background:var(--paper-line-soft)}
-  @media(max-width:520px){.note-more{right:-8px}}
+  /* Botones de acción de cada nota */
+  .note-actions{
+    position:absolute;right:-4px;top:12px;
+    display:flex;gap:6px;align-items:center;
+  }
+  @media(max-width:520px){.note-actions{right:-8px}}
+  .note-btn{
+    background:var(--paper-2);
+    border:1px solid var(--paper-line);
+    color:var(--ink-soft);
+    width:38px;height:38px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;padding:0;line-height:1;transition:.15s;
+    font-size:17px;
+  }
+  .note-btn:active{background:var(--nb-accent-soft);color:var(--nb-accent);border-color:var(--nb-accent)}
+  .note-btn.more{font-size:20px}
   .note-checklist{margin:6px 0 0 0;padding:0;list-style:none}
   .note-checklist li{display:flex;align-items:flex-start;gap:8px;padding:4px 0;
     font-size:14.5px;line-height:1.4}
@@ -169,7 +171,7 @@
     font-weight:700;position:absolute;left:3px;top:-2px}
   .note-checklist li.on span{text-decoration:line-through;color:var(--ink-faint)}
   .fab{position:fixed;right:calc(50% - 320px + 20px);
-    bottom:calc(96px + env(safe-area-inset-bottom));
+    bottom:calc(170px + env(safe-area-inset-bottom));
     background:var(--nb-accent);color:#fff;border:none;border-radius:28px;
     padding:14px 22px 14px 18px;font-family:var(--serif);font-size:15px;
     font-weight:600;letter-spacing:.3px;box-shadow:0 8px 24px rgba(60,40,20,.28);
@@ -179,7 +181,7 @@
   @media(max-width:680px){.fab{right:20px}}
   body[data-notebook="familiar"] .fab{background:var(--nb-accent);color:#fff;
     width:62px;height:62px;border-radius:50%;padding:0;justify-content:center;
-    font-size:32px;font-family:inherit;bottom:calc(96px + env(safe-area-inset-bottom))}
+    font-size:32px;font-family:inherit;bottom:calc(170px + env(safe-area-inset-bottom))}
   body[data-notebook="familiar"] .fab .label-txt{display:none}
   body[data-notebook="familiar"] .fab .plus{font-size:32px}
   nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--paper);
@@ -261,8 +263,7 @@
   [data-theme="dark"] .cal-med-info{background:#1e2a38;border-color:#3a5470;color:#b8d4ee}
   .cal-med-info .em{font-size:18px}
   .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
-  .cal-grid .wd{font-size:12px;text-align:center;color:var(--ink-soft);
-    padding:6px 0;font-weight:700}
+  .cal-grid .wd{font-size:12px;text-align:center;color:var(--ink-soft);padding:6px 0;font-weight:700}
   .cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;
     justify-content:center;border-radius:12px;cursor:pointer;position:relative;
     font-size:16px;border:1px solid transparent;color:var(--ink);background:transparent;min-height:44px}
@@ -287,13 +288,13 @@
   .searchbox input{width:100%;padding:14px 16px;border-radius:14px;
     border:1px solid var(--paper-line);background:var(--paper-2);color:var(--ink);
     font-size:16px;font-family:var(--sans)}
-  .toast{position:fixed;left:50%;bottom:calc(180px + env(safe-area-inset-bottom));
+  .toast{position:fixed;left:50%;bottom:calc(250px + env(safe-area-inset-bottom));
     transform:translateX(-50%);background:var(--ink);color:var(--paper);
     padding:10px 20px;border-radius:20px;font-size:13.5px;z-index:60;opacity:0;
     transition:opacity .2s,transform .2s;pointer-events:none;font-family:var(--sans)}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
   body[data-notebook="familiar"] .toast{font-size:16px;padding:14px 22px;background:#2b2b2b;color:#fff}
-  .settings{padding:16px 6px 170px}
+  .settings{padding:16px 6px 200px}
   .settings h3{font-family:var(--serif);font-size:12px;letter-spacing:2px;
     text-transform:uppercase;color:var(--ink-faint);margin:24px 4px 12px;font-weight:600}
   body[data-notebook="familiar"] .settings h3{font-family:inherit;font-size:14px;color:var(--ink-soft)}
@@ -307,21 +308,15 @@
   .switch::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;
     border-radius:50%;background:var(--paper);transition:.2s}
   .switch.on::after{left:21px}
-  /* Colores de fondo — selector */
   .bg-picker{display:flex;gap:10px;flex-wrap:wrap;padding:8px 4px 4px;justify-content:flex-start}
-  .bg-swatch{
-    width:52px;height:52px;border-radius:50%;
+  .bg-swatch{width:52px;height:52px;border-radius:50%;
     border:3px solid var(--paper-line);cursor:pointer;
     display:flex;align-items:center;justify-content:center;
-    font-size:22px;position:relative;
-    transition:.15s;
-  }
+    font-size:22px;position:relative;transition:.15s}
   .bg-swatch:active{transform:scale(.95)}
   .bg-swatch.on{border-color:var(--nb-accent);box-shadow:0 0 0 2px var(--nb-accent-soft)}
-  .bg-swatch.on::after{
-    content:"✓";position:absolute;font-size:16px;color:#fff;
-    text-shadow:0 1px 3px rgba(0,0,0,.5);font-weight:800;
-  }
+  .bg-swatch.on::after{content:"✓";position:absolute;font-size:16px;color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,.5);font-weight:800}
   .fam-card{background:var(--paper);border:1.5px solid var(--paper-line);
     border-radius:18px;padding:16px 16px 14px;margin-bottom:14px;
     box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;
@@ -433,16 +428,14 @@ const THEME_KEY='cuaderno.theme';
 const NOTEBOOK_KEY='cuaderno.notebook';
 const NAME_KEY='cuaderno.famName';
 const BG_KEY='cuaderno.bgColors';
-
 const COLORS_BG=[
-  {id:'papel',   name:'Papel cálido',   emoji:'📜', swatch:'#fbf6ea', paper:'#fbf6ea', paper2:'#f4ecdc', line:'#e7dcc2', lineSoft:'#efe6d0', bg:'#e9dfc8'},
-  {id:'rosa',    name:'Rosa suave',     emoji:'🌸', swatch:'#fdf0f0', paper:'#fdf0f0', paper2:'#f8dede', line:'#f0d2d2', lineSoft:'#f5e4e4', bg:'#f2d9d9'},
-  {id:'menta',   name:'Verde menta',    emoji:'🌿', swatch:'#eef7ec', paper:'#eef7ec', paper2:'#dcecd9', line:'#cfe4cb', lineSoft:'#e1ede0', bg:'#d6e6d3'},
-  {id:'cielo',   name:'Azul cielo',     emoji:'🌊', swatch:'#eaf2fb', paper:'#eaf2fb', paper2:'#d6e4f5', line:'#c8dbf0', lineSoft:'#dde9f5', bg:'#cfdff0'},
-  {id:'terracota',name:'Terracota',     emoji:'🍂', swatch:'#fbeede', paper:'#fbeede', paper2:'#f4dcc1', line:'#e8cba9', lineSoft:'#f0dcc2', bg:'#ebd2b6'},
-  {id:'noche',   name:'Crema oscuro',   emoji:'🌙', swatch:'#2e2a24', paper:'#2e2a24', paper2:'#38332b', line:'#463f34', lineSoft:'#3a352d', bg:'#1c1a16'}
+  {id:'papel',   name:'Papel cálido', emoji:'📜', swatch:'#fbf6ea', paper:'#fbf6ea', paper2:'#f4ecdc', line:'#e7dcc2', lineSoft:'#efe6d0', bg:'#e9dfc8'},
+  {id:'rosa',    name:'Rosa suave',   emoji:'🌸', swatch:'#fdf0f0', paper:'#fdf0f0', paper2:'#f8dede', line:'#f0d2d2', lineSoft:'#f5e4e4', bg:'#f2d9d9'},
+  {id:'menta',   name:'Verde menta',  emoji:'🌿', swatch:'#eef7ec', paper:'#eef7ec', paper2:'#dcecd9', line:'#cfe4cb', lineSoft:'#e1ede0', bg:'#d6e6d3'},
+  {id:'cielo',   name:'Azul cielo',   emoji:'🌊', swatch:'#eaf2fb', paper:'#eaf2fb', paper2:'#d6e4f5', line:'#c8dbf0', lineSoft:'#dde9f5', bg:'#cfdff0'},
+  {id:'terracota',name:'Terracota',   emoji:'🍂', swatch:'#fbeede', paper:'#fbeede', paper2:'#f4dcc1', line:'#e8cba9', lineSoft:'#f0dcc2', bg:'#ebd2b6'},
+  {id:'noche',   name:'Crema oscuro', emoji:'🌙', swatch:'#2e2a24', paper:'#2e2a24', paper2:'#38332b', line:'#463f34', lineSoft:'#3a352d', bg:'#1c1a16'}
 ];
-
 const CATEGORIAS_FAMILIA=[
   {id:'medicacion', emoji:'💊', label:'Medicación', tipo:'PASTILLA'},
   {id:'medico',     emoji:'🩺', label:'Médico',     tipo:'MÉDICO'},
@@ -453,7 +446,6 @@ const CATEGORIAS_FAMILIA=[
   {id:'casa',       emoji:'🏠', label:'Casa',       tipo:'CASA'},
   {id:'otros',      emoji:'📌', label:'Otros',      tipo:'OTROS'}
 ];
-
 let state={
   notebooks:{ trabajo:{notes:[]}, familiar:{notes:[]} },
   theme: localStorage.getItem(THEME_KEY)||'light',
@@ -464,7 +456,6 @@ let state={
 if(!state.bgColors) state.bgColors={trabajo:'papel',familiar:'papel'};
 if(!state.bgColors.trabajo) state.bgColors.trabajo='papel';
 if(!state.bgColors.familiar) state.bgColors.familiar='papel';
-
 let currentDate=todayISO();
 let currentTab='hoy';
 let calMonth=new Date();
@@ -493,7 +484,6 @@ function greeting(){
 }
 function dayName(iso){const d=parseISO(iso);return ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][d.getDay()];}
 function monthNameUpper(iso){const d=parseISO(iso);return ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'][d.getMonth()];}
-
 function load(){
   try{
     const raw=localStorage.getItem(STORE_KEY);
@@ -522,15 +512,12 @@ function save(){try{localStorage.setItem(STORE_KEY, JSON.stringify({notebooks:st
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 function notes(){return state.notebooks[state.currentNotebook].notes;}
 function setNotes(arr){state.notebooks[state.currentNotebook].notes=arr;}
-
 function applyTheme(){
   document.documentElement.setAttribute('data-theme', state.theme);
   document.body.setAttribute('data-notebook', state.currentNotebook);
-  // Aplicar color de fondo del cuaderno actual
   const bgId = state.bgColors[state.currentNotebook] || 'papel';
   const c = COLORS_BG.find(function(x){return x.id===bgId;}) || COLORS_BG[0];
   if(state.theme==='dark' && bgId==='noche'){
-    // Modo oscuro mantiene su propia paleta
     document.documentElement.style.removeProperty('--paper');
     document.documentElement.style.removeProperty('--paper-2');
     document.documentElement.style.removeProperty('--paper-line');
@@ -683,7 +670,7 @@ function render(){
     fab.style.display='flex'; renderAllNotes(main);
   } else if(currentTab==='importantes'){
     if(esFam){
-      header.innerHTML='<div class="fam-header"><div class="fam-hello">Importantes</div><div class="fam-date">Marcadas con ⭐</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>';
+      header.innerHTML='<div class="fam-header"><div class="fam-hello">Importantes</div><div class="fam-date">Marcadas con ⭐</div><div class="fam-settings-row"><button id="settings">⚙️ Ajustes</button></div></div>';
     } else {
       renderCuadHeader(header,{mini:true, title:'Importantes', sub:'Lo que no quieres perder de vista'});
     }
@@ -761,7 +748,15 @@ function noteHTML(n){
       return '<li class="'+(c.done?'on':'')+'"><button class="cbox '+(c.done?'on':'')+'" data-act="toggle-item" data-idx="'+i+'" aria-label="marcar"></button><span>'+escapeHTML(c.text)+'</span></li>';
     }).join('')+'</ul>';
   }
-  return '<div class="note '+(n.done?'done':'')+'" data-id="'+n.id+'"><button class="note-check '+(n.done?'on':'')+'" data-act="check" aria-label="completar"></button>'+timeLabel+body+(tags.length?'<div class="note-tags">'+tags.join('')+'</div>':'')+'<button class="note-more" data-act="more" aria-label="más">⋯</button></div>';
+  return '<div class="note '+(n.done?'done':'')+'" data-id="'+n.id+'">'+
+    '<button class="note-check '+(n.done?'on':'')+'" data-act="check" aria-label="completar"></button>'+
+    timeLabel+body+
+    (tags.length?'<div class="note-tags">'+tags.join('')+'</div>':'')+
+    '<div class="note-actions">'+
+      '<button class="note-btn" data-act="edit" aria-label="editar">✎</button>'+
+      '<button class="note-btn more" data-act="more" aria-label="más">⋯</button>'+
+    '</div>'+
+  '</div>';
 }
 function wireNotes(container){
   container.querySelectorAll('.note').forEach(function(note){
@@ -773,6 +768,7 @@ function wireNotes(container){
         if(act==='check') toggleDone(id);
         else if(act==='toggle-item') toggleCheckItem(id, parseInt(btn.dataset.idx,10));
         else if(act==='more') openNoteMenu(id);
+        else if(act==='edit') openEditorCuad(id);
       };
     });
     let pressT;
@@ -1245,7 +1241,7 @@ function openSettings(){
   };
 }
 function exportBackup(){
-  const data={app:'cuaderno',version:6,exportedAt:new Date().toISOString(),notebooks:state.notebooks,famName:state.famName,bgColors:state.bgColors};
+  const data={app:'cuaderno',version:7,exportedAt:new Date().toISOString(),notebooks:state.notebooks,famName:state.famName,bgColors:state.bgColors};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
