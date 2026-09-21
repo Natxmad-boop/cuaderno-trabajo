@@ -103,8 +103,8 @@
   .med-banner .headline{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;
     color:#1e4a75;font-weight:800;margin-bottom:2px;opacity:.75}
   [data-theme="dark"] .med-banner .headline{color:#b8d4ee}
-  main{flex:1;padding:8px 18px 220px;overflow:hidden}
-  main.fam{padding:14px 14px 230px}
+  main{flex:1;padding:8px 18px 230px;overflow:hidden}
+  main.fam{padding:14px 14px 240px}
   .section-label{font-family:var(--serif);font-size:11px;letter-spacing:2px;
     text-transform:uppercase;color:var(--ink-faint);font-weight:600;
     margin:24px 4px 12px;display:flex;align-items:center;gap:8px}
@@ -143,21 +143,12 @@
   [data-theme="dark"] .note-tag.personal{background:#1e2c22;color:#8ec09a}
   .note-tag.important{background:#fbe6cf;color:var(--important)}
   [data-theme="dark"] .note-tag.important{background:#3a2e18;color:#e0a25b}
-  /* Botones de acción de cada nota */
-  .note-actions{
-    position:absolute;right:-4px;top:12px;
-    display:flex;gap:6px;align-items:center;
-  }
+  .note-actions{position:absolute;right:-4px;top:12px;display:flex;gap:6px;align-items:center}
   @media(max-width:520px){.note-actions{right:-8px}}
-  .note-btn{
-    background:var(--paper-2);
-    border:1px solid var(--paper-line);
-    color:var(--ink-soft);
-    width:38px;height:38px;border-radius:50%;
+  .note-btn{background:var(--paper-2);border:1px solid var(--paper-line);
+    color:var(--ink-soft);width:38px;height:38px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    cursor:pointer;padding:0;line-height:1;transition:.15s;
-    font-size:17px;
-  }
+    cursor:pointer;padding:0;line-height:1;transition:.15s;font-size:17px}
   .note-btn:active{background:var(--nb-accent-soft);color:var(--nb-accent);border-color:var(--nb-accent)}
   .note-btn.more{font-size:20px}
   .note-checklist{margin:6px 0 0 0;padding:0;list-style:none}
@@ -670,7 +661,7 @@ function render(){
     fab.style.display='flex'; renderAllNotes(main);
   } else if(currentTab==='importantes'){
     if(esFam){
-      header.innerHTML='<div class="fam-header"><div class="fam-hello">Importantes</div><div class="fam-date">Marcadas con ⭐</div><div class="fam-settings-row"><button id="settings">⚙️ Ajustes</button></div></div>';
+      header.innerHTML='<div class="fam-header"><div class="fam-hello">Importantes</div><div class="fam-date">Marcadas con ⭐</div><div class="fam-settings-row"><button id="settings">⚙︎ Ajustes</button></div></div>';
     } else {
       renderCuadHeader(header,{mini:true, title:'Importantes', sub:'Lo que no quieres perder de vista'});
     }
